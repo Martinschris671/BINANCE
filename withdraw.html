@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Withdraw - Binance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Your custom CSS is preserved exactly */
+      :root {
+        --binance-yellow: #fcd535;
+        --binance-dark: #1e2329;
+        --binance-gray: #848e9c;
+        --binance-light-gray: #f5f5f5;
+        --binance-border-gray: #eaecef;
+        --binance-red: #f6465d;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: white;
+        color: var(--binance-dark);
+      }
+      #app-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        position: relative;
+        flex-shrink: 0;
+      }
+      .page-header .back-arrow {
+        position: absolute;
+        left: 16px;
+        cursor: pointer;
+      }
+      .page-header .back-arrow img {
+        width: 22px;
+        height: 22px;
+      }
+      .page-header .title {
+        font-size: 18px;
+        font-weight: 600;
+      }
+      .withdraw-card-container {
+        flex-grow: 1;
+        background-color: white;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+      }
+      .balance-display {
+        margin-bottom: 24px;
+      }
+      .balance-display .label {
+        font-size: 14px;
+        color: var(--binance-gray);
+        margin-bottom: 4px;
+      }
+      .balance-display .amount {
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .amount-input-label {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .amount-input-label .max-btn {
+        color: var(--binance-dark);
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .amount-input-container {
+        background-color: var(--binance-light-gray);
+        padding: 8px 14px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: 1px solid transparent;
+        transition: border-color 0.2s ease;
+      }
+      .amount-input-container.invalid {
+        border-color: var(--binance-red);
+      }
+      .amount-input {
+        font-size: 26px;
+        font-weight: 500;
+        border: none;
+        outline: none;
+        flex-grow: 1;
+        width: 50%;
+        background: transparent;
+      }
+      .amount-input::placeholder {
+        color: #c9cdd4;
+        font-size: 15px;
+      }
+      .currency-indicator {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--binance-dark);
+      }
+      .actions-footer {
+        margin-top: auto;
+        padding-top: 24px;
+      }
+      .keypad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px 40px;
+        margin-bottom: 24px;
+      }
+      .keypad-btn {
+        background: none;
+        border: none;
+        padding: 8px 20px;
+        cursor: pointer;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .keypad-btn img {
+        height: 17px;
+      }
+      .withdraw-btn {
+        width: 100%;
+        padding: 16px;
+        border-radius: 50px;
+        border: none;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        background-color: #eaecef;
+        color: #bfbfbf;
+        transition: all 0.2s ease;
+      }
+      .withdraw-btn.active {
+        background-color: var(--binance-yellow);
+        color: var(--binance-dark);
+      }
+      #success-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: white;
+        z-index: 3000;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 24px;
+        animation: fadeIn 0.3s ease;
+      }
+      #success-overlay.active {
+        display: flex;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .success-content {
+        text-align: center;
+      }
+      .success-content .success-icon {
+        width: 72px;
+        height: 72px;
+        margin-bottom: 24px;
+      }
+      .success-content h2 {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .success-content p {
+        font-size: 15px;
+        color: var(--binance-gray);
+        margin-bottom: 32px;
+      }
+      .success-content .done-btn {
+        background-color: var(--binance-yellow);
+        color: var(--binance-dark);
+        border: none;
+        padding: 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
+      }
+      #loading-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(255, 255, 255, 0.8);
+        z-index: 4000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      #loading-overlay.active {
+        display: flex;
+      }
+      .loading-spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-left-color: var(--binance-dark);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app-container">
+      <header class="page-header">
+        <a href="portfolio.html" class="back-arrow">
+          <img src="icons/arrow-l.jpg" alt="Back" />
+        </a>
+        <h2 class="title">Withdraw</h2>
+      </header>
+
+      <main class="withdraw-card-container">
+        <div class="balance-display">
+          <p class="label">Total Withdrawable Balance</p>
+          <p class="amount" id="available-balance">$0.00</p>
+        </div>
+
+        <div class="amount-input-label">
+          <span>Amount</span>
+          <span class="max-btn" id="max-btn">MAX</span>
+        </div>
+        <div class="amount-input-container" id="amount-container">
+          <input
+            type="text"
+            id="withdraw-amount-input"
+            class="amount-input"
+            placeholder="0.00"
+            readonly
+          />
+          <span class="currency-indicator">USD</span>
+        </div>
+
+        <footer class="actions-footer">
+          <div class="keypad">
+            <button class="keypad-btn">
+              <img src="icons/1.jpg" alt="1" data-key="1" />
+            </button>
+            <button class="keypad-btn">
+              <img src="icons/2.jpg" alt="2" data-key="2" />
+            </button>
+            <button class="keypad-btn">
+              <img src="icons/3.jpg" alt="3" data-key="3" />
+            </button>
+            <button class="keypad-btn">
+              <img src="icons/4.jpg" alt="4" data-key="4" />
+            </button>
+            <button class="keypad-btn">
+              <img src="icons/5.jpg" alt="5" data-key="5" />
+            </button>
+            <button class="keypad-btn">
+              <img src="icons/6.jpg" alt="6" data-key="6" />
+            </button>
+            <button class="keypad-btn">
+              <img src="icons/7.jpg" alt="7" data-key="7" />
+            </button>
+            <button class="keypad-btn">
+              <img src="icons/8.jpg" alt="8" data-key="8" />
+            </button>
+            <button class="keypad-btn">
+              <img src="icons/9.jpg" alt="9" data-key="9" />
+            </button>
+            <button class="keypad-btn dot-key">
+              <img src="icons/dot.jpg" alt="." data-key="." />
+            </button>
+            <button class="keypad-btn">
+              <img src="icons/0.jpg" alt="0" data-key="0" />
+            </button>
+            <button class="keypad-btn backspace-key">
+              <img
+                src="icons/backspace.jpg"
+                alt="Backspace"
+                data-key="backspace"
+              />
+            </button>
+          </div>
+          <button id="withdraw-btn" class="withdraw-btn">Withdraw</button>
+        </footer>
+      </main>
+
+      <div id="loading-overlay"><div class="loading-spinner"></div></div>
+      <div id="success-overlay">
+        <main class="success-content">
+          <img
+            class="success-icon"
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 52'%3E%3Ccircle cx='26' cy='26' r='25' fill='%230ECB81'/%3E%3Cpath fill='none' stroke='%23FFF' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' d='M14.1 27.2l7.1 7.2 16.7-16.8'/%3E%3C/svg%3E"
+            alt="Success"
+          />
+          <h2>Withdrawal Successful</h2>
+          <p>
+            Your withdrawal has been processed and your balance has been
+            updated.
+          </p>
+          <button id="done-btn" class="done-btn">Done</button>
+        </main>
+      </div>
+      <audio
+        id="success-sound"
+        src="audio/successed-295058.mp3"
+        preload="auto"
+      ></audio>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- NEW, PERFECTED JAVASCRIPT FOR A UNIFIED BALANCE SYSTEM -->
+    <!-- ======================================================== -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- 1. CENTRALIZED STATE MANAGEMENT ---
+        const APP_STORAGE_KEY = "binanceCloneData_v1";
+        const defaultState = {
+          user: { preferences: { balanceVisible: true, searchHistory: [] } },
+          wallet: { usd_balance: 50278.41, est_total_value: 50278.41 },
+          transactions: [],
+        };
+        let appState = {};
+
+        const loadState = () => {
+          try {
+            const savedState = localStorage.getItem(APP_STORAGE_KEY);
+            appState = savedState
+              ? JSON.parse(savedState)
+              : { ...defaultState };
+            if (!appState.wallet) appState.wallet = { ...defaultState.wallet };
+            if (typeof appState.wallet.est_total_value === "undefined") {
+              appState.wallet.est_total_value =
+                appState.wallet.usd_balance || 0;
+            }
+          } catch (error) {
+            appState = { ...defaultState };
+          }
+        };
+
+        const saveState = () =>
+          localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(appState));
+
+        // --- 2. CORE WITHDRAWAL LOGIC ---
+        const handleWithdrawal = () => {
+          showOverlay("loading-overlay");
+          setTimeout(() => {
+            loadState();
+            const withdrawAmount = parseFloat(
+              document.getElementById("withdraw-amount-input").dataset.value
+            );
+            if (
+              isNaN(withdrawAmount) ||
+              withdrawAmount <= 0 ||
+              withdrawAmount > appState.wallet.est_total_value
+            ) {
+              hideOverlay("loading-overlay");
+              alert("Invalid withdrawal amount.");
+              return;
+            }
+
+            // === THE ULTRA-FUNCTIONAL, REALISTIC DEDUCTION ===
+            // 1. DEDUCT FROM TOTAL VALUE: This is the primary value representing the account's worth.
+            appState.wallet.est_total_value -= withdrawAmount;
+
+            // 2. DEDUCT FROM CASH BALANCE: Simulate using cash first.
+            // If you withdraw more than your cash, the cash balance goes to zero.
+            appState.wallet.usd_balance -= withdrawAmount;
+            if (appState.wallet.usd_balance < 0) {
+              appState.wallet.usd_balance = 0;
+            }
+
+            // 3. CREATE TRANSACTION RECORD
+            appState.transactions.unshift({
+              id: `txn_${Date.now()}`,
+              date: new Date().toISOString(),
+              type: "Withdraw",
+              usdAmount: withdrawAmount,
+            });
+
+            // 4. SAVE ATOMICALLY
+            saveState();
+
+            hideOverlay("loading-overlay");
+            document
+              .getElementById("success-sound")
+              .play()
+              .catch((e) => console.log("Audio play failed."));
+            showOverlay("success-overlay");
+          }, 1200); // Realistic delay
+        };
+
+        // --- 3. UI & UTILITY FUNCTIONS ---
+        const showOverlay = (id) =>
+          document.getElementById(id)?.classList.add("active");
+        const hideOverlay = (id) =>
+          document.getElementById(id)?.classList.remove("active");
+        const formatCurrency = (num) =>
+          `$${(num || 0).toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`;
+        const formatNumberWithCommas = (numStr) => {
+          if (!numStr || numStr === ".") return numStr;
+          const parts = numStr.split(".");
+          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          return parts.join(".");
+        };
+
+        const renderUI = () => {
+          // Display the TOTAL ESTIMATED VALUE as the withdrawable balance.
+          document.getElementById("available-balance").textContent =
+            formatCurrency(appState.wallet.est_total_value);
+        };
+
+        // --- 4. EVENT LISTENER SETUP ---
+        const setupEventListeners = () => {
+          const amountInput = document.getElementById("withdraw-amount-input");
+          const withdrawBtn = document.getElementById("withdraw-btn");
+          const amountContainer = document.getElementById("amount-container");
+
+          const updateInput = (newValue) => {
+            amountInput.dataset.value = newValue;
+            amountInput.value = formatNumberWithCommas(newValue);
+            validateInput();
+          };
+
+          const validateInput = () => {
+            const enteredAmount = parseFloat(amountInput.dataset.value) || 0;
+            // Validate against the TOTAL account value.
+            const withdrawableBalance = appState.wallet.est_total_value || 0;
+            const isAmountValid =
+              enteredAmount > 0 && enteredAmount <= withdrawableBalance;
+            withdrawBtn.classList.toggle("active", isAmountValid);
+            amountContainer.classList.toggle(
+              "invalid",
+              enteredAmount > withdrawableBalance
+            );
+          };
+
+          document.querySelectorAll(".keypad-btn").forEach((btn) => {
+            btn.addEventListener("click", (event) => {
+              const key = event.currentTarget.querySelector("img")?.dataset.key;
+              if (!key) return;
+              let rawValue = amountInput.dataset.value || "";
+              if (key === "backspace") {
+                rawValue = rawValue.slice(0, -1);
+              } else if (key === "." && !rawValue.includes(".")) {
+                rawValue += ".";
+              } else if (/\d/.test(key)) {
+                const d = rawValue.split(".")[1];
+                if (!d || d.length < 2) rawValue += key;
+              }
+              updateInput(rawValue);
+            });
+          });
+
+          // The MAX button now uses the TOTAL account value.
+          document.getElementById("max-btn").addEventListener("click", () => {
+            const maxAmount = (appState.wallet.est_total_value || 0)
+              .toFixed(2)
+              .toString();
+            updateInput(maxAmount);
+          });
+
+          withdrawBtn.addEventListener("click", () => {
+            if (withdrawBtn.classList.contains("active")) {
+              handleWithdrawal();
+            }
+          });
+          document.getElementById("done-btn").addEventListener("click", () => {
+            window.location.href = "home.html";
+          });
+        };
+
+        // --- 5. INITIALIZATION ---
+        loadState();
+        renderUI();
+        setupEventListeners();
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Binance</title>
+    <!-- Font Awesome for the trade button icon -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Your custom CSS is preserved exactly */
+      :root {
+        --binance-yellow: #fcd535;
+        --binance-dark: #212530;
+        --binance-gray: #848e9c;
+        --binance-light-gray: #fafafa;
+        --binance-border-gray: #eaecef;
+        --binance-green: #0ecb81;
+        --binance-red: #f6465d;
+        --background-color: #ffffff;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+          sans-serif;
+        background-color: var(--background-color);
+        color: var(--binance-dark);
+      }
+      #app-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+      }
+      .main-header {
+        position: relative;
+        z-index: 20;
+        background-color: var(--background-color);
+        padding: 10px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+      }
+      .main-header-left .binance-logo img {
+        width: 24px;
+        height: 24px;
+        border-radius: 10px;
+      }
+      .main-header-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .main-header-right .icon-img {
+        height: 20px;
+        width: 19px;
+      }
+      #main-content {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding-bottom: 80px;
+      }
+      #main-content::-webkit-scrollbar {
+        display: none;
+      }
+      #main-content {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .balance-section {
+        padding: 4px 16px;
+      }
+      .balance-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--binance-gray);
+        margin-bottom: 2px;
+      }
+      .balance-label .icon-img {
+        height: 14px;
+        width: 14px;
+        cursor: pointer;
+      }
+      .balance-value-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .balance-value {
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        transition: font-size 0.2s ease-out; /* Smooth transition for font size change */
+      }
+      /* --- Dynamic font classes to prevent overflow --- */
+      .balance-value.small {
+        font-size: 24px;
+      }
+      .balance-value.tiny {
+        font-size: 20px;
+      }
+      .add-funds-btn {
+        background-color: var(--binance-yellow);
+        color: var(--binance-dark);
+        border: none;
+        padding: 10px 16px;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 13px;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .carousel-section {
+        padding: 15px 0 8px 0;
+        margin: 16px 0;
+        border-top: 1px solid var(--binance-border-gray);
+        border-bottom: 1px solid var(--binance-border-gray);
+      }
+      .carousel-container {
+        position: relative;
+        overflow: hidden;
+        cursor: grab;
+      }
+      .carousel-container:active {
+        cursor: grabbing;
+      }
+      .carousel-slides {
+        display: flex;
+        transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+      .carousel-slide {
+        flex-shrink: 0;
+        width: 100%;
+        background-color: var(--background-color);
+        padding: 0 16px 28px 16px;
+      }
+      .slide-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .slide-text .subtitle {
+        font-size: 12px;
+        color: var(--binance-gray);
+        margin-bottom: 4px;
+        font-weight: 500;
+      }
+      .slide-text .title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--binance-dark);
+      }
+      .slide-graphic {
+        width: 60px;
+        height: 60px;
+      }
+      .carousel-pagination {
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 6px;
+      }
+      .carousel-pagination .dot {
+        width: 12px;
+        height: 4px;
+        border-radius: 2px;
+        background-color: #eaecef;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      .carousel-pagination .dot.active {
+        background-color: var(--binance-dark);
+        width: 18px;
+      }
+      .watchlist-sticky-header {
+        position: sticky;
+        top: 0;
+        background: var(--background-color);
+        padding: 0 16px;
+        z-index: 10;
+      }
+      .watchlist-title {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding-top: 5px;
+        padding-bottom: 4px;
+      }
+      .watchlist-title span {
+        font-size: 20px;
+        font-weight: 500;
+      }
+      .watchlist-title .watchlist-gray {
+        font-size: 15px;
+        color: var(--binance-gray);
+      }
+      .watchlist-title .watchlist-dark {
+        font-size: 15px;
+        color: var(--binance-dark);
+      }
+      .watchlist-tabs-container {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 10px 0;
+      }
+      .watchlist-tabs-container .tab {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--binance-gray);
+        white-space: nowrap;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .watchlist-tabs-container .tab.hot-pill {
+        background-color: #f5f5f5;
+        border-radius: 20px;
+        padding: 6px 12px;
+        font-weight: 600;
+        color: var(--binance-dark);
+      }
+      .sort-icon {
+        width: 10px;
+        height: 10px;
+      }
+      #crypto-list-container {
+        padding: 0 16px;
+      }
+      .crypto-list {
+        list-style: none;
+      }
+      .crypto-item {
+        display: grid;
+        grid-template-columns: 5fr 3fr;
+        align-items: center;
+        padding: 8px 0;
+      }
+      .crypto-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .crypto-icon {
+        width: 28px;
+        height: 28px;
+      }
+      .crypto-name .symbol {
+        font-weight: 600;
+        font-size: 15px;
+        line-height: 1.2;
+      }
+      .crypto-name .name {
+        font-size: 12px;
+        color: var(--binance-gray);
+      }
+      .crypto-market-data {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+      .crypto-change {
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .crypto-price {
+        font-size: 12px;
+        color: var(--binance-gray);
+      }
+      .crypto-change.positive {
+        color: var(--binance-green);
+      }
+      .crypto-change.negative {
+        color: var(--binance-red);
+      }
+      #loading-spinner {
+        display: flex;
+        justify-content: center;
+        padding: 40px;
+      }
+      .spinner {
+        border: 4px solid var(--binance-border-gray);
+        border-top: 4px solid var(--binance-yellow);
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 65px;
+        background-color: var(--background-color);
+        border-top: 1px solid var(--binance-border-gray);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        z-index: 100;
+      }
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        color: var(--binance-gray);
+        cursor: pointer;
+        width: 60px;
+        font-weight: 500;
+      }
+      .nav-item.active {
+        color: var(--binance-dark);
+        font-weight: 600;
+      }
+      .nav-item .icon {
+        height: 24px;
+        width: 24px;
+      }
+      #trade-btn-container {
+        position: fixed;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        cursor: pointer;
+        z-index: 1001;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #trade-icon-wrapper {
+        width: 45px;
+        height: 45px;
+        background-color: var(--binance-dark);
+        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        transform: rotate(45deg);
+        margin-bottom: 14px;
+      }
+      #trade-btn-container .trade-label {
+        font-size: 11px;
+        color: var(--binance-gray);
+        font-weight: 500;
+        transition: opacity 0.4s ease;
+      }
+      .trade-icon {
+        position: absolute;
+        font-size: 22px;
+        transition: opacity 0.3s ease-in-out;
+      }
+      .trade-icon-exchange {
+        color: white;
+        opacity: 1;
+        transform: rotate(-45deg);
+        height: 30px;
+        width: 30px;
+      }
+      .trade-icon-close {
+        height: 30px;
+        width: 30px;
+        color: white;
+        opacity: 0;
+        transform: rotate(0deg);
+      }
+      body.trade-modal-active .bottom-nav {
+        transform: translateY(100%);
+      }
+      body.trade-modal-active #trade-icon-wrapper {
+        background-color: var(--binance-dark);
+        border-radius: 20%;
+        transform: rotate(0deg);
+      }
+      body.trade-modal-active #trade-btn-container .trade-label {
+        opacity: 0;
+      }
+      body.trade-modal-active .trade-icon-exchange {
+        opacity: 0;
+      }
+      body.trade-modal-active .trade-icon-close {
+        opacity: 1;
+      }
+      #trade-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.4s ease, visibility 0s 0.4s;
+        z-index: 999;
+      }
+      #trade-modal {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: var(--background-color);
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        padding: 16px 16px 100px 16px;
+        transform: translateY(100%);
+        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+      body.trade-modal-active #trade-modal-overlay {
+        opacity: 1;
+        visibility: visible;
+        transition-delay: 0s;
+      }
+      body.trade-modal-active #trade-modal {
+        transform: translateY(0);
+      }
+      .modal-item {
+        display: flex;
+        align-items: center;
+        padding: 16px 0;
+        gap: 16px;
+        cursor: pointer;
+      }
+      .modal-item .icon-wrapper {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .modal-item .icon {
+        height: 20px;
+        width: 20px;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ALL HTML IS PRESERVED -->
+    <div id="app-container">
+      <header class="main-header">
+        <div class="main-header-left">
+          <div class="binance-logo">
+            <img src="icons/Header_Image_Binance.png" class="icon-img" />
+          </div>
+        </div>
+        <div class="main-header-right">
+          <img src="icons/search.jpg" class="icon-img" /><img
+            src="icons/scan.jpg"
+            class="icon-img"
+          /><img src="icons/red.jpg" class="icon-img" />
+        </div>
+      </header>
+      <main id="main-content">
+        <section class="balance-section">
+          <div class="balance-label">
+            Est. Total Value
+            <span id="visibility-toggle"
+              ><img src="icons/eyeon.jpg" class="icon-img"
+            /></span>
+          </div>
+          <div class="balance-value-wrapper">
+            <div id="balance-value" class="balance-value">$0.0000</div>
+            <a href="add-funds.html" class="add-funds-btn">Add Funds</a>
+          </div>
+        </section>
+        <section class="carousel-section">
+          <div class="carousel-container">
+            <div class="carousel-slides">
+              <div class="carousel-slide">
+                <div class="slide-content">
+                  <div class="slide-text">
+                    <p class="subtitle">Deposit or Buy Crypto Seamlessly</p>
+                    <p class="title">Enjoy Zero Fee on EUR</p>
+                  </div>
+                  <img
+                    class="slide-graphic"
+                    src="icons/percent.jpg"
+                    alt="Competition graphic"
+                  />
+                </div>
+              </div>
+              <div class="carousel-slide">
+                <div class="slide-content">
+                  <div class="slide-text">
+                    <p class="subtitle">Join the Ultimate Memecoin Battle</p>
+                    <p class="title">200,000 USDC for grabs!</p>
+                  </div>
+                  <img
+                    class="slide-graphic"
+                    src="icons/grabs.jpg"
+                    alt="New listings graphic"
+                  />
+                </div>
+              </div>
+              <div class="carousel-slide">
+                <div class="slide-content">
+                  <div class="slide-text">
+                    <p class="subtitle">Share up to 2M Binance Points</p>
+                    <p class="title">Play & Earn with Binance</p>
+                  </div>
+                  <img
+                    class="slide-graphic"
+                    src="icons/game.png"
+                    alt="Earn graphic"
+                  />
+                </div>
+              </div>
+              <div class="carousel-slide">
+                <div class="slide-content">
+                  <div class="slide-text">
+                    <p class="subtitle">Earn together</p>
+                    <p class="title">Unlock Up to 2,000 USDC</p>
+                  </div>
+                  <img
+                    class="slide-graphic"
+                    src="icons/earn.jpg"
+                    alt="Pay graphic"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="carousel-pagination"></div>
+          </div>
+        </section>
+        <section id="watchlist-section">
+          <div class="watchlist-sticky-header">
+            <div class="watchlist-title">
+              <span class="watchlist-gray">Watchlist</span
+              ><span class="watchlist-dark">Coin</span>
+            </div>
+            <div class="watchlist-tabs-container">
+              <div class="tab hot-pill">Hot</div>
+              <div class="tab">Market Cap</div>
+              <div class="tab">
+                Price<img
+                  src="icons/arrowupdown.jpg"
+                  class="sort-icon"
+                  alt="sort"
+                />
+              </div>
+              <div class="tab">
+                24H Change<img
+                  src="icons/arrowupdown.jpg"
+                  class="sort-icon"
+                  alt="sort"
+                />
+              </div>
+            </div>
+          </div>
+          <div id="crypto-list-container">
+            <div id="loading-spinner"><div class="spinner"></div></div>
+            <ul id="crypto-list" class="crypto-list"></ul>
+          </div>
+        </section>
+      </main>
+      <nav class="bottom-nav">
+        <div class="nav-item active">
+          <img class="icon" src="icons/market.jpg" /> Markets
+        </div>
+        <div class="nav-item">
+          <img class="icon" src="icons/square.jpg" /> Square
+        </div>
+        <div class="nav-item"></div>
+        <div class="nav-item">
+          <img class="icon" src="icons/explore.jpg" /> Discover
+        </div>
+        <a href="portfolio.html">
+          <div class="nav-item">
+            <img class="icon" src="icons/portfolio.jpg" /> Portfolio
+          </div></a
+        >
+      </nav>
+      <div id="trade-btn-container">
+        <div id="trade-icon-wrapper">
+          <img
+            class="trade-icon trade-icon-exchange"
+            src="icons/trade.jpg"
+            alt=""
+          />
+          <img
+            class="trade-icon trade-icon-close"
+            src="icons/xicon.jpg"
+            alt=""
+          />
+        </div>
+        <span class="trade-label">Trade</span>
+      </div>
+      <div id="trade-modal-overlay">
+        <div id="trade-modal">
+          <a href="add-funds.html">
+            <div class="modal-item">
+              <div class="icon-wrapper">
+                <img class="icon" id="modal-buy" />
+              </div>
+              <div class="modal-item-text">
+                <p class="title">Buy</p>
+                <p class="subtitle">Buy crypto with USD</p>
+              </div>
+            </div></a
+          >
+          <div class="modal-item">
+            <div class="icon-wrapper"><img class="icon" id="modal-sell" /></div>
+            <div class="modal-item-text">
+              <p class="title">Sell</p>
+              <p class="subtitle">Sell crypto to USD</p>
+            </div>
+          </div>
+          <a href="send.html" style="text-decoration: none; color: inherit">
+            <div class="modal-item">
+              <div class="icon-wrapper">
+                <!-- You will need to create a send.jpg icon -->
+                <img class="icon" src="icons/withdraw.jpg" />
+              </div>
+              <div class="modal-item-text">
+                <p class="title">Send</p>
+                <p class="subtitle">Send crypto to another Binance user</p>
+              </div>
+            </div>
+          </a>
+          <div class="modal-item">
+            <div class="icon-wrapper">
+              <img class="icon" id="modal-deposit" />
+            </div>
+            <a href="add-funds.html">
+              <div class="modal-item-text">
+                <p class="title">Deposit</p>
+                <p class="subtitle">
+                  Deposit crypto on-chain or local currencies
+                </p>
+              </div></a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!--  FINAL ULTRA-FUNCTIONAL JAVASCRIPT & LOCAL STORAGE SYSTEM -->
+    <!-- ========================================================= -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- 1. ADVANCED STATE MANAGEMENT & LOCAL STORAGE ---
+        const APP_STORAGE_KEY = "binanceCloneData_v1";
+        const defaultState = {
+          user: { preferences: { balanceVisible: true } },
+          wallet: { usd_balance: 50278.41, est_total_value: 50278.41 },
+          transactions: [],
+        };
+        let appState = {};
+
+        const loadState = () => {
+          try {
+            const savedState = localStorage.getItem(APP_STORAGE_KEY);
+            appState = savedState
+              ? JSON.parse(savedState)
+              : JSON.parse(JSON.stringify(defaultState));
+            // Ensure data structure is always valid, even with old data
+            if (!appState.user) appState.user = defaultState.user;
+            if (!appState.wallet) appState.wallet = defaultState.wallet;
+            if (typeof appState.wallet.est_total_value === "undefined") {
+              appState.wallet.est_total_value =
+                appState.wallet.usd_balance || 0;
+            }
+          } catch (error) {
+            appState = JSON.parse(JSON.stringify(defaultState));
+          }
+        };
+
+        const saveState = () => {
+          try {
+            localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(appState));
+          } catch (error) {
+            console.error("Failed to save state:", error);
+          }
+        };
+
+        // --- 2. DYNAMIC UI RENDERING FUNCTIONS ---
+
+        /**
+         * THIS IS THE NEW, ULTRA-FUNCTIONAL RENDERBALANCE FUNCTION.
+         * It is now simpler and more powerful because it displays the single,
+         * correct "est_total_value" that is updated by the other pages.
+         */
+        const renderBalance = () => {
+          const balanceValueEl = document.getElementById("balance-value");
+          const visibilityToggleEl =
+            document.getElementById("visibility-toggle");
+          if (!balanceValueEl || !visibilityToggleEl) return;
+
+          const eyeIcon = `icons/eyeon.jpg`;
+          const eyeOffIcon = `icons/eyeoff.jpg`;
+          const isVisible = appState.user.preferences.balanceVisible;
+
+          visibilityToggleEl.innerHTML = `<img src="${
+            isVisible ? eyeIcon : eyeOffIcon
+          }" class="icon-img">`;
+
+          if (isVisible) {
+            // THE CORE CHANGE: We now directly display the "est_total_value".
+            // This value is correctly updated by add-funds.html and withdraw.html,
+            // making the entire application perfectly connected.
+            const totalValue = appState.wallet.est_total_value || 0;
+
+            const formattedBalance = `$${totalValue.toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}`;
+
+            // Dynamically adjust font size to prevent ugly text wrapping
+            balanceValueEl.classList.remove("small", "tiny");
+            if (formattedBalance.length > 15) {
+              balanceValueEl.classList.add("tiny");
+            } else if (formattedBalance.length > 11) {
+              balanceValueEl.classList.add("small");
+            }
+
+            balanceValueEl.textContent = formattedBalance;
+          } else {
+            balanceValueEl.textContent = "******";
+            balanceValueEl.classList.remove("small", "tiny");
+          }
+        };
+
+        const fetchCryptoData = async () => {
+          const cryptoListEl = document.getElementById("crypto-list");
+          const loadingSpinnerEl = document.getElementById("loading-spinner");
+          if (!cryptoListEl || !loadingSpinnerEl) return;
+
+          loadingSpinnerEl.style.display = "flex";
+          cryptoListEl.innerHTML = "";
+
+          const cryptoIds =
+            "binancecoin,bitcoin,ethereum,pepe,solana,ripple,cardano,dogecoin,avalanche-2,shiba-inu,polkadot,chainlink,matic-network,litecoin,tron,tether,usd-coin,uniswap,near,aptos";
+          try {
+            const response = await fetch(
+              `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${cryptoIds}&order=market_cap_desc&per_page=30&page=1&sparkline=false`
+            );
+            if (!response.ok) throw new Error(`API Error: ${response.status}`);
+            const data = await response.json();
+
+            cryptoListEl.innerHTML = data
+              .map((coin) => {
+                const priceChange = coin.price_change_percentage_24h;
+                const changeClass = priceChange >= 0 ? "positive" : "negative";
+                const sign = priceChange >= 0 ? "+" : "";
+                const price =
+                  coin.current_price < 0.01
+                    ? coin.current_price.toPrecision(4)
+                    : coin.current_price.toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      });
+                return `<li class="crypto-item"><div class="crypto-info"><img src="${
+                  coin.image
+                }" alt="${
+                  coin.name
+                }" class="crypto-icon"><div class="crypto-name"><div class="symbol">${coin.symbol.toUpperCase()}</div><div class="name">${
+                  coin.name
+                }</div></div></div><div class="crypto-market-data"><div class="crypto-change ${changeClass}">${sign}${priceChange.toFixed(
+                  2
+                )}%</div><div class="crypto-price">$${price}</div></div></li>`;
+              })
+              .join("");
+          } catch (error) {
+            cryptoListEl.innerHTML = `<li style="text-align: center; color: var(--binance-red); padding: 20px 0;">Failed to load market data.</li>`;
+          } finally {
+            loadingSpinnerEl.style.display = "none";
+            // Render the balance using our new, powerful function
+            renderBalance();
+          }
+        };
+
+        // --- 3. INTERACTIVITY & EVENT LISTENERS ---
+        const setupEventListeners = () => {
+          document
+            .getElementById("visibility-toggle")
+            ?.addEventListener("click", () => {
+              appState.user.preferences.balanceVisible =
+                !appState.user.preferences.balanceVisible;
+              saveState();
+              renderBalance();
+            });
+
+          document
+            .getElementById("trade-btn-container")
+            ?.addEventListener("click", (e) => {
+              e.stopPropagation();
+              document.body.classList.toggle("trade-modal-active");
+            });
+
+          document
+            .getElementById("trade-modal-overlay")
+            ?.addEventListener("click", () => {
+              document.body.classList.remove("trade-modal-active");
+            });
+        };
+
+        const injectModalIcons = () => {
+          const icons = {
+            buy: `icons/buy.jpg`,
+            sell: `icons/sell.jpg`,
+            convert: `icons/convert.jpg`,
+            deposit: `icons/deposit.jpg`,
+          };
+          for (const [id, path] of Object.entries(icons)) {
+            const el = document.getElementById(`modal-${id}`);
+            if (el) el.src = path;
+          }
+        };
+
+        const initCarousel = () => {
+          const container = document.querySelector(".carousel-container"),
+            slides = document.querySelector(".carousel-slides");
+          if (!container || !slides || slides.children.length === 0) return;
+          const slideCount = slides.children.length,
+            paginationContainer = document.querySelector(
+              ".carousel-pagination"
+            );
+          let currentIndex = 0,
+            autoPlayInterval,
+            isDragging = false,
+            startPos = 0,
+            currentTranslate = 0,
+            prevTranslate = 0;
+          for (let i = 0; i < slideCount; i++) {
+            const dot = document.createElement("div");
+            dot.classList.add("dot");
+            dot.addEventListener("click", () => {
+              currentIndex = i;
+              goToSlide();
+              resetAutoPlay();
+            });
+            paginationContainer.appendChild(dot);
+          }
+          const dots = paginationContainer.children;
+          const updatePagination = () => {
+            Array.from(dots).forEach((dot, index) =>
+              dot.classList.toggle("active", index === currentIndex)
+            );
+          };
+          const goToSlide = () => {
+            slides.style.transition =
+              "transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)";
+            currentTranslate = currentIndex * -container.offsetWidth;
+            prevTranslate = currentTranslate;
+            slides.style.transform = `translateX(${currentTranslate}px)`;
+            updatePagination();
+          };
+          const startAutoPlay = () => {
+            autoPlayInterval = setInterval(() => {
+              currentIndex = (currentIndex + 1) % slideCount;
+              goToSlide();
+            }, 5000);
+          };
+          const resetAutoPlay = () => {
+            clearInterval(autoPlayInterval);
+            startAutoPlay();
+          };
+          const getPositionX = (e) =>
+            e.type.includes("mouse") ? e.pageX : e.touches[0].clientX;
+          const touchStart = (e) => {
+            isDragging = true;
+            startPos = getPositionX(e);
+            slides.style.transition = "none";
+            clearInterval(autoPlayInterval);
+          };
+          const touchMove = (e) => {
+            if (isDragging) {
+              const currentPosition = getPositionX(e);
+              currentTranslate = prevTranslate + currentPosition - startPos;
+              slides.style.transform = `translateX(${currentTranslate}px)`;
+            }
+          };
+          const touchEnd = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            const movedBy = currentTranslate - prevTranslate;
+            if (movedBy < -50 && currentIndex < slideCount - 1) currentIndex++;
+            if (movedBy > 50 && currentIndex > 0) currentIndex--;
+            goToSlide();
+            startAutoPlay();
+          };
+          container.addEventListener("mousedown", touchStart);
+          container.addEventListener("touchstart", touchStart, {
+            passive: true,
+          });
+          container.addEventListener("mouseup", touchEnd);
+          container.addEventListener("mouseleave", touchEnd);
+          container.addEventListener("touchend", touchEnd);
+          container.addEventListener("mousemove", touchMove);
+          container.addEventListener("touchmove", touchMove, { passive: true });
+          window.addEventListener("resize", goToSlide);
+          updatePagination();
+          startAutoPlay();
+        };
+
+        // --- 4. APPLICATION INITIALIZATION ---
+        const init = () => {
+          loadState();
+          // Initial render on page load, will be updated after fetch
+          renderBalance();
+          fetchCryptoData();
+          injectModalIcons();
+          setupEventListeners();
+          initCarousel();
+
+          // REAL-TIME CROSS-TAB SYNC LISTENER
+          window.addEventListener("storage", (event) => {
+            if (event.key === APP_STORAGE_KEY) {
+              console.log(
+                "Storage changed by another page. Updating UI in real-time."
+              );
+              loadState(); // Reload the state from the updated storage
+              renderBalance(); // Re-render the balance with the new data
+            }
+          });
+        };
+
+        init();
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Add Funds - Binance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --binance-yellow: #fcd535;
+        --binance-dark: #1e2329;
+        --binance-gray: #848e9c;
+        --binance-light-gray: #f5f5f5;
+        --binance-border-gray: #f5f5f5;
+        --binance-red: #f6465d;
+        --background-color: #ffffff;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--background-color);
+        color: var(--binance-dark);
+      }
+      #app-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+      }
+      .view {
+        width: 100%;
+        height: 100%;
+        display: none;
+        flex-direction: column;
+        background-color: var(--background-color);
+        position: absolute;
+        top: 0;
+        left: 0;
+        animation: fadeIn 0.3s ease-in-out;
+      }
+      .view.active {
+        display: flex;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        position: relative;
+        flex-shrink: 0;
+      }
+      .page-header .back-arrow {
+        position: absolute;
+        left: 16px;
+        cursor: pointer;
+      }
+      .page-header .back-arrow img {
+        width: 22px;
+        height: 22px;
+      }
+      .page-header .title {
+        font-size: 18px;
+        font-weight: 600;
+      }
+      #choose-crypto-view .content {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 0 16px;
+      }
+      .search-bar-wrapper {
+        padding: 8px 16px;
+      }
+      .search-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background-color: var(--binance-light-gray);
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      .search-bar img {
+        width: 18px;
+        height: 18px;
+      }
+      .search-bar input {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 15px;
+        flex-grow: 1;
+      }
+      .crypto-list {
+        list-style: none;
+      }
+      .crypto-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        cursor: pointer;
+      }
+      .crypto-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .crypto-icon {
+        width: 32px;
+        height: 32px;
+      }
+      .crypto-name .symbol {
+        font-weight: 600;
+        font-size: 16px;
+      }
+      .crypto-name .name {
+        font-size: 13px;
+        color: var(--binance-gray);
+      }
+      .crypto-price {
+        font-size: 16px;
+        font-weight: 500;
+      }
+      .buy-card-container {
+        flex-grow: 1;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+      }
+      .amount-input-label {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+      .amount-input-container {
+        background-color: var(--binance-light-gray);
+        padding: 8px 14px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .amount-input {
+        font-size: 32px;
+        font-weight: 600;
+        border: none;
+        outline: none;
+        flex-grow: 1;
+        width: 50%;
+        background: transparent;
+      }
+      .amount-input::placeholder {
+        color: #c9cdd4;
+      }
+      .currency-indicator {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--binance-dark);
+      }
+      .conversion-info {
+        font-size: 13px;
+        color: var(--binance-gray);
+        margin-top: 10px;
+        height: 18px;
+      }
+      .actions-footer {
+        margin-top: auto;
+        padding-top: 24px;
+      }
+      .keypad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px 40px;
+        margin-bottom: 24px;
+      }
+      .keypad-btn {
+        background: none;
+        border: none;
+        padding: 8px 20px;
+        cursor: pointer;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .keypad-btn img {
+        height: 17px;
+      }
+      .continue-btn {
+        width: 100%;
+        padding: 16px;
+        border-radius: 50px;
+        border: none;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        background-color: #eaecef;
+        color: #bfbfbf;
+        transition: all 0.2s ease;
+      }
+      .continue-btn.active {
+        background-color: var(--binance-yellow);
+        color: var(--binance-dark);
+      }
+
+      /* === PIXEL-PERFECT UI CHANGES START HERE === */
+      #payment-method-view .content {
+        flex-grow: 1;
+        background-color: var(--binance-light-gray);
+        padding: 0;
+      }
+      #payment-method-view .header-payment-info {
+        text-align: center;
+        padding: 24px 16px;
+        background: white;
+      }
+      .header-payment-info .label {
+        font-size: 14px;
+        color: var(--binance-gray);
+      }
+      .header-payment-info .amount {
+        font-size: 32px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
+      /* NEW: Section header style */
+      .payment-section-header {
+        font-size: 14px;
+        color: var(--binance-gray);
+        padding: 24px 16px 8px 16px;
+        font-weight: 500;
+      }
+      .payment-card-option {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0 16px;
+      }
+      .card-info {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .card-info img {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+      }
+      .card-info .title {
+        font-size: 16px;
+        font-weight: 600;
+      }
+      /* NEW: Subtitle style for "Add >" */
+      .card-info .subtitle {
+        font-size: 14px;
+        color: var(--binance-gray);
+        margin-top: 2px;
+      }
+      /* UPDATED: Wrapper for horizontal alignment */
+      .crypto-value-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .crypto-value-wrapper .crypto-amount {
+        font-size: 16px;
+        font-weight: 600;
+      }
+      /* NEW: Radio button style */
+      .radio-btn-selected {
+        width: 20px;
+        height: 20px;
+      }
+      #payment-method-view .footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 16px 24px;
+        border-top: 1px solid var(--binance-border-gray);
+      }
+      .footer .payment-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .footer .price-info .amount {
+        font-size: 20px;
+        font-weight: 700;
+      }
+      .footer .price-info .timer {
+        font-size: 12px;
+        color: var(--binance-gray);
+      }
+      .footer .confirm-btn {
+        background-color: var(--binance-yellow);
+        color: var(--binance-dark);
+        border: none;
+        padding: 14px 40px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .footer .confirm-btn:disabled {
+        background-color: #eaecef;
+        color: #bdc2c8;
+        cursor: not-allowed;
+      }
+      /* === PIXEL-PERFECT UI CHANGES END HERE === */
+
+      .overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 3000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      .overlay.active {
+        display: flex;
+      }
+      #loading-overlay {
+        background-color: rgba(255, 255, 255, 0.8);
+      }
+      #success-overlay {
+        background-color: white;
+        flex-direction: column;
+        padding: 24px;
+        animation: slideUp 0.4s ease-out;
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(100%);
+        }
+        to {
+          transform: translateY(0);
+        }
+      }
+      .loading-spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-left-color: var(--binance-dark);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .success-content {
+        text-align: center;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .success-icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 24px auto;
+      }
+      .success-content h2 {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .success-content p {
+        font-size: 15px;
+        color: var(--binance-gray);
+        margin-bottom: 32px;
+      }
+      .done-btn {
+        background-color: var(--binance-yellow);
+        color: var(--binance-dark);
+        border: none;
+        padding: 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
+        max-width: 350px;
+        margin: 0 auto;
+      }
+      .dynamic-font-size.small {
+        font-size: 14px !important;
+      }
+      .dynamic-font-size.tiny {
+        font-size: 12px !important;
+        line-height: 1.3;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app-container">
+      <!-- VIEW 1: CHOOSE CRYPTO -->
+      <div id="choose-crypto-view" class="view active">
+        <header class="page-header">
+          <a href="home.html" class="back-arrow"
+            ><img src="icons/arrow-l.jpg" alt="Back"
+          /></a>
+          <h2 class="title">Add Funds</h2>
+        </header>
+        <div class="search-bar-wrapper">
+          <div class="search-bar">
+            <img src="icons/search2.jpg" alt="Search" />
+            <input
+              id="crypto-search-input"
+              type="text"
+              placeholder="Search Crypto"
+            />
+          </div>
+        </div>
+        <main class="content">
+          <ul id="crypto-list" class="crypto-list"></ul>
+        </main>
+      </div>
+
+      <!-- VIEW 2: ENTER AMOUNT -->
+      <div id="buy-crypto-view" class="view">
+        <header class="page-header">
+          <div class="back-arrow" data-target="choose-crypto-view">
+            <img src="icons/arrow-l.jpg" alt="Back" />
+          </div>
+          <h2 class="title" id="buy-view-title">Buy</h2>
+        </header>
+        <main class="buy-card-container">
+          <div class="amount-input-label">Amount in USD</div>
+          <div class="amount-input-container">
+            <input
+              type="text"
+              id="amount-input"
+              class="amount-input"
+              placeholder="0.00"
+              readonly
+            />
+            <span class="currency-indicator">USD</span>
+          </div>
+          <p class="conversion-info" id="conversion-info-text"> </p>
+          <footer class="actions-footer">
+            <div class="keypad">
+              <button class="keypad-btn">
+                <img src="icons/1.jpg" alt="1" data-key="1" />
+              </button>
+              <button class="keypad-btn">
+                <img src="icons/2.jpg" alt="2" data-key="2" />
+              </button>
+              <button class="keypad-btn">
+                <img src="icons/3.jpg" alt="3" data-key="3" />
+              </button>
+              <button class="keypad-btn">
+                <img src="icons/4.jpg" alt="4" data-key="4" />
+              </button>
+              <button class="keypad-btn">
+                <img src="icons/5.jpg" alt="5" data-key="5" />
+              </button>
+              <button class="keypad-btn">
+                <img src="icons/6.jpg" alt="6" data-key="6" />
+              </button>
+              <button class="keypad-btn">
+                <img src="icons/7.jpg" alt="7" data-key="7" />
+              </button>
+              <button class="keypad-btn">
+                <img src="icons/8.jpg" alt="8" data-key="8" />
+              </button>
+              <button class="keypad-btn">
+                <img src="icons/9.jpg" alt="9" data-key="9" />
+              </button>
+              <button class="keypad-btn">
+                <img src="icons/dot.jpg" alt="." data-key="." />
+              </button>
+              <button class="keypad-btn">
+                <img src="icons/0.jpg" alt="0" data-key="0" />
+              </button>
+              <button class="keypad-btn">
+                <img
+                  src="icons/backspace.jpg"
+                  alt="Backspace"
+                  data-key="backspace"
+                />
+              </button>
+            </div>
+            <button id="continue-btn" class="continue-btn">Continue</button>
+          </footer>
+        </main>
+      </div>
+
+      <!-- VIEW 3: SELECT PAYMENT (PIXEL-PERFECT UPDATED UI) -->
+      <div id="payment-method-view" class="view">
+        <header class="page-header">
+          <div class="back-arrow" data-target="buy-crypto-view">
+            <img src="icons/arrow-l.jpg" alt="Back" />
+          </div>
+          <h2 class="title">Select Payment Method</h2>
+        </header>
+        <main class="content">
+          <div class="header-payment-info">
+            <p class="label">You will pay</p>
+            <p id="payment-usd-amount" class="amount dynamic-font-size"></p>
+          </div>
+          <!-- NEW: Section Header -->
+          <p class="payment-section-header">Card/Bank Accounts/Others</p>
+          <!-- UPDATED: Card Option Layout -->
+          <div class="payment-card-option">
+            <div class="card-info">
+              <img src="icons/visa.png" alt="VISA" />
+              <div>
+                <p class="title">Card (VISA/Mastercard)</p>
+                <p class="subtitle">Add ></p>
+              </div>
+            </div>
+            <div class="crypto-value-wrapper">
+              <p
+                id="payment-crypto-amount"
+                class="crypto-amount dynamic-font-size"
+              ></p>
+              <img
+                class="radio-btn-selected"
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='12' r='10' stroke='%231E2329' stroke-width='2'/%3E%3Ccircle cx='12' cy='12' r='5' fill='%231E2329'/%3E%3C/svg%3E"
+                alt="selected"
+              />
+            </div>
+          </div>
+        </main>
+        <footer class="footer">
+          <div class="payment-summary">
+            <div class="price-info">
+              <p id="footer-usd-amount" class="amount dynamic-font-size"></p>
+              <p id="price-timer" class="timer">Price valid for 42s</p>
+            </div>
+            <button id="confirm-purchase-btn" class="confirm-btn">
+              Confirm
+            </button>
+          </div>
+        </footer>
+      </div>
+
+      <!-- OVERLAYS -->
+      <div id="loading-overlay" class="overlay">
+        <div class="loading-spinner"></div>
+      </div>
+      <div id="success-overlay" class="overlay">
+        <main class="success-content">
+          <img
+            class="success-icon"
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 52'%3E%3Ccircle cx='26' cy='26' r='25' fill='%230ECB81'/%3E%3Cpath fill='none' stroke='%23FFF' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' d='M14.1 27.2l7.1 7.2 16.7-16.8'/%3E%3C/svg%3E"
+            alt="Success"
+          />
+          <h2>Purchase Successful</h2>
+          <p>Your crypto has been added to your assets.</p>
+          <button id="done-btn" class="done-btn">Done</button>
+        </main>
+      </div>
+      <audio
+        id="success-sound"
+        src="audio/successed-295058.mp3"
+        preload="auto"
+      ></audio>
+    </div>
+
+    <!-- JAVASCRIPT IS 100% UNCHANGED -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- 1. STATE & APP SETUP ---
+        const APP_STORAGE_KEY = "binanceCloneData_v1";
+        const defaultState = {
+          user: { preferences: { balanceVisible: true, searchHistory: [] } },
+          wallet: { usd_balance: 50278.41, est_total_value: 50278.41 },
+          transactions: [],
+        };
+        let appState = {};
+        let selectedCrypto = {};
+        let priceTimerInterval;
+
+        const loadState = () => {
+          try {
+            const savedState = localStorage.getItem(APP_STORAGE_KEY);
+            appState = savedState
+              ? JSON.parse(savedState)
+              : { ...defaultState };
+            if (!appState.wallet) appState.wallet = { ...defaultState.wallet };
+            if (!appState.transactions) appState.transactions = [];
+          } catch (error) {
+            appState = { ...defaultState };
+          }
+        };
+
+        const saveState = () =>
+          localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(appState));
+
+        const handleConfirmation = () => {
+          clearInterval(priceTimerInterval);
+          showOverlay("loading-overlay");
+
+          setTimeout(() => {
+            loadState();
+            const usdAmount = parseFloat(
+              document.getElementById("amount-input").dataset.value
+            );
+            const cryptoAmount = usdAmount / selectedCrypto.current_price;
+            const cryptoSymbol = selectedCrypto.symbol.toLowerCase();
+            appState.wallet.est_total_value =
+              (appState.wallet.est_total_value || 0) + usdAmount;
+            appState.wallet[cryptoSymbol] =
+              (appState.wallet[cryptoSymbol] || 0) + cryptoAmount;
+            appState.transactions.unshift({
+              id: `txn_${Date.now()}`,
+              date: new Date().toISOString(),
+              type: "Buy",
+              usdAmount,
+              cryptoAmount,
+              cryptoSymbol: selectedCrypto.symbol.toUpperCase(),
+              cryptoName: selectedCrypto.name,
+            });
+            saveState();
+
+            hideOverlay("loading-overlay");
+            document
+              .getElementById("success-sound")
+              .play()
+              .catch((e) => console.log("Audio play failed."));
+            showOverlay("success-overlay");
+          }, 1200);
+        };
+
+        const showView = (viewId) => {
+          document
+            .querySelectorAll(".view")
+            .forEach((v) => v.classList.remove("active"));
+          document.getElementById(viewId)?.classList.add("active");
+        };
+        const showOverlay = (id) =>
+          document.getElementById(id)?.classList.add("active");
+        const hideOverlay = (id) =>
+          document.getElementById(id)?.classList.remove("active");
+        const adjustFontSize = (element, text) => {
+          element.classList.remove("small", "tiny");
+          if (text.length > 15) element.classList.add("tiny");
+          else if (text.length > 10) element.classList.add("small");
+        };
+        const formatNumberWithCommas = (numStr) => {
+          if (!numStr || numStr === ".") return numStr;
+          const parts = numStr.split(".");
+          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          return parts.join(".");
+        };
+
+        const renderCryptoList = (coins) => {
+          const listEl = document.getElementById("crypto-list");
+          if (!coins || coins.length === 0) {
+            listEl.innerHTML = `<li style="text-align:center; padding: 40px; color: var(--binance-gray);">Could not load data.</li>`;
+            return;
+          }
+          listEl.innerHTML = coins
+            .map(
+              (coin) =>
+                `<li class="crypto-item" data-id='${JSON.stringify(
+                  coin
+                )}'><div class="crypto-info"><img src="${coin.image}" alt="${
+                  coin.name
+                }" class="crypto-icon"><div><div class="symbol">${coin.symbol.toUpperCase()}</div><div class="name">${
+                  coin.name
+                }</div></div></div><div class="crypto-price">$${coin.current_price.toLocaleString(
+                  "en-US",
+                  { minimumFractionDigits: 2, maximumFractionDigits: 6 }
+                )}</div></li>`
+            )
+            .join("");
+          listEl
+            .querySelectorAll(".crypto-item")
+            .forEach((item) =>
+              item.addEventListener("click", handleCryptoSelection)
+            );
+        };
+        const fetchTopCryptos = async () => {
+          const listEl = document.getElementById("crypto-list");
+          listEl.innerHTML = `<div id="loading-overlay" class="overlay active" style="position:relative; background:none; height: 300px;"><div class="loading-spinner"></div></div>`;
+          try {
+            const response = await fetch(
+              `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,tether,ripple,binancecoin,solana,usd-coin,tron,dogecoin,cardano,shiba-inu,polkadot,matic-network,litecoin,avalanche-2&order=market_cap_desc&per_page=20`
+            );
+            if (!response.ok) throw new Error("API request failed");
+            renderCryptoList(await response.json());
+          } catch (error) {
+            renderCryptoList(null);
+          }
+        };
+
+        const handleCryptoSelection = (event) => {
+          selectedCrypto = JSON.parse(event.currentTarget.dataset.id);
+          document.getElementById(
+            "buy-view-title"
+          ).textContent = `Buy ${selectedCrypto.symbol.toUpperCase()}`;
+          document.getElementById("amount-input").value = "";
+          document.getElementById("amount-input").dataset.value = "";
+          document.getElementById("conversion-info-text").innerHTML = " ";
+          document.getElementById("continue-btn").classList.remove("active");
+          showView("buy-crypto-view");
+        };
+        const startPriceTimer = () => {
+          clearInterval(priceTimerInterval);
+          const timerEl = document.getElementById("price-timer"),
+            confirmBtn = document.getElementById("confirm-purchase-btn");
+          let timeLeft = 42;
+          confirmBtn.disabled = false;
+          timerEl.style.color = "var(--binance-gray)";
+          priceTimerInterval = setInterval(() => {
+            timeLeft--;
+            timerEl.textContent = `Price valid for ${timeLeft}s`;
+            if (timeLeft <= 0) {
+              clearInterval(priceTimerInterval);
+              timerEl.textContent = "Price expired";
+              timerEl.style.color = "var(--binance-red)";
+              confirmBtn.disabled = true;
+            }
+          }, 1000);
+        };
+
+        const setupEventListeners = () => {
+          document
+            .querySelectorAll(".back-arrow")
+            .forEach((arrow) =>
+              arrow.addEventListener("click", () =>
+                showView(arrow.dataset.target || "choose-crypto-view")
+              )
+            );
+          const amountInput = document.getElementById("amount-input"),
+            continueBtn = document.getElementById("continue-btn"),
+            conversionInfo = document.getElementById("conversion-info-text");
+          document.querySelectorAll(".keypad-btn").forEach((btn) => {
+            btn.addEventListener("click", (event) => {
+              const key = event.currentTarget.querySelector("img")?.dataset.key;
+              if (!key) return;
+              let rawValue = amountInput.dataset.value || "";
+              if (key === "backspace") {
+                rawValue = rawValue.slice(0, -1);
+              } else if (key === "." && !rawValue.includes(".")) {
+                rawValue += ".";
+              } else if (/\d/.test(key)) {
+                const d = rawValue.split(".")[1];
+                if (!d || d.length < 2) rawValue += key;
+              }
+              amountInput.dataset.value = rawValue;
+              amountInput.value = formatNumberWithCommas(rawValue);
+              const enteredAmount = parseFloat(rawValue) || 0;
+              continueBtn.classList.toggle("active", enteredAmount > 0);
+              conversionInfo.textContent =
+                enteredAmount > 0
+                  ? `≈ ${(enteredAmount / selectedCrypto.current_price).toFixed(
+                      8
+                    )} ${selectedCrypto.symbol.toUpperCase()}`
+                  : "\u00A0";
+            });
+          });
+          continueBtn.addEventListener("click", () => {
+            if (!continueBtn.classList.contains("active")) return;
+            const usdAmount = parseFloat(amountInput.dataset.value),
+              cryptoAmount = (usdAmount / selectedCrypto.current_price).toFixed(
+                8
+              ),
+              formattedUSD = usdAmount.toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD",
+              });
+            const paymentUsdEl = document.getElementById("payment-usd-amount"),
+              footerUsdEl = document.getElementById("footer-usd-amount"),
+              paymentCryptoEl = document.getElementById(
+                "payment-crypto-amount"
+              );
+            paymentUsdEl.textContent = formattedUSD;
+            footerUsdEl.textContent = formattedUSD;
+            paymentCryptoEl.textContent = `${cryptoAmount} ${selectedCrypto.symbol.toUpperCase()}`;
+            adjustFontSize(paymentUsdEl, formattedUSD);
+            adjustFontSize(footerUsdEl, formattedUSD);
+            adjustFontSize(
+              paymentCryptoEl,
+              `${cryptoAmount} ${selectedCrypto.symbol.toUpperCase()}`
+            );
+            startPriceTimer();
+            showView("payment-method-view");
+          });
+          document
+            .getElementById("confirm-purchase-btn")
+            .addEventListener("click", handleConfirmation);
+          document
+            .getElementById("done-btn")
+            .addEventListener(
+              "click",
+              () => (window.location.href = "home.html")
+            );
+          document
+            .getElementById("crypto-search-input")
+            .addEventListener("input", (e) => {
+              const query = e.target.value.toLowerCase();
+              document
+                .querySelectorAll("#crypto-list .crypto-item")
+                .forEach((item) => {
+                  const coinData = JSON.parse(item.dataset.id);
+                  item.style.display =
+                    coinData.name.toLowerCase().includes(query) ||
+                    coinData.symbol.toLowerCase().includes(query)
+                      ? "flex"
+                      : "none";
+                });
+            });
+        };
+
+        loadState();
+        fetchTopCryptos();
+        setupEventListeners();
+      });
+    </script>
+  </body>
+</html>

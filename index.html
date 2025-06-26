@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Binance</title>
+    <style>
+      /* Basic reset for perfect rendering */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+        overflow: hidden; /* Prevent scrollbars */
+        position: relative;
+        /* This is the color that will appear underneath the overlay as it fades */
+        background-color: #ffffff;
+      }
+
+      /* The Main Loading Screen Overlay */
+      #loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        /* PERFECTED: The exact background color you requested */
+        background-color: #11181e;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 1; /* Start fully visible */
+      }
+
+      /* The container for your logo */
+      #logo-container {
+        transform: scale(1);
+      }
+
+      #logo-container img {
+        display: block;
+        /* PERFECTED: Sizing to prevent distortion and ensure a clean look */
+        width: 180px;
+        height: auto; /* Maintains the logo's original aspect ratio */
+      }
+
+      /* Keyframes for the ULTRA-SMOOTH logo animation */
+      @keyframes logoShrinkEffect {
+        0% {
+          transform: scale(1);
+        }
+        /* Hold the scale for the first 4 seconds (80% of 5s) */
+        80% {
+          transform: scale(1);
+        }
+        /* Gently shrink in the last second */
+        100% {
+          transform: scale(0.9);
+        }
+      }
+
+      /* Keyframes for the ULTRA-CLEAN screen fade-out animation */
+      @keyframes screenFadeOutEffect {
+        0% {
+          opacity: 1;
+        }
+        /* Hold the opacity for the first 4 seconds */
+        80% {
+          opacity: 1;
+        }
+        /* Fade out in the last second */
+        100% {
+          opacity: 0;
+          /* Ensures the element is hidden after the animation */
+          visibility: hidden;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- The Loading Screen -->
+    <div id="loading-screen">
+      <div id="logo-container">
+        <!-- 
+          PERFECTED: Place your Binance logo image here. 
+          For example, if your image is named "binance-logo.png" and is in an "icons" folder, 
+          the src would be "icons/binance-logo.png".
+        -->
+        <img src="icons/binace.jpg" alt="Binance Logo" />
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const loadingScreen = document.getElementById("loading-screen");
+        const logoContainer = document.getElementById("logo-container");
+
+        // PERFECTED: Animation duration is precisely 5 seconds (5000ms)
+        const animationDuration = 5000;
+
+        // Apply the ultra-smooth animations via JavaScript
+        if (logoContainer) {
+          logoContainer.style.animation = `logoShrinkEffect ${
+            animationDuration / 1000
+          }s ease-in-out forwards`;
+        }
+        if (loadingScreen) {
+          loadingScreen.style.animation = `screenFadeOutEffect ${
+            animationDuration / 1000
+          }s ease-in-out forwards`;
+        }
+
+        // After the 5-second animation, redirect to the main application
+        setTimeout(() => {
+          // This uses window.location.replace() for a professional redirect
+          // that doesn't add the loading screen to the browser history.
+          window.location.replace("home.html");
+        }, animationDuration);
+      });
+    </script>
+  </body>
+</html>

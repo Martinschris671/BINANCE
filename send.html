@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Send Crypto - Binance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --binance-yellow: #fcd535;
+        --binance-dark: #1e2329;
+        --binance-gray: #848e9c;
+        --binance-light-gray: #f5f5f5;
+        --binance-border-gray: #eaecef;
+        --binance-red: #f6465d;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+        background-color: var(--binance-light-gray);
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        color: var(--binance-dark);
+      }
+      #app-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+      .view {
+        width: 100%;
+        height: 100%;
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 0;
+        left: 0;
+        animation: fadeIn 0.3s ease-in-out;
+      }
+      .view.active {
+        display: flex;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        position: relative;
+        flex-shrink: 0;
+        background-color: white;
+        border-bottom: 1px solid var(--binance-border-gray);
+      }
+      .page-header .back-arrow,
+      .page-header .header-action {
+        cursor: pointer;
+      }
+      .page-header .back-arrow {
+        position: absolute;
+        left: 16px;
+      }
+      .page-header .header-action {
+        position: absolute;
+        right: 16px;
+      }
+      .page-header img {
+        width: 22px;
+        height: 22px;
+      }
+      .page-header .title {
+        font-size: 18px;
+        font-weight: 600;
+      }
+      #send-view .main-content {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 16px;
+      }
+      .input-group {
+        background-color: white;
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+      .input-group .label {
+        font-size: 14px;
+        color: var(--binance-gray);
+        margin-bottom: 8px;
+        display: block;
+      }
+      .input-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .input-row input,
+      .input-row select {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 16px;
+        width: 100%;
+        font-family: "Inter", sans-serif;
+      }
+      .input-row input::placeholder {
+        color: #c9cdd4;
+      }
+      .input-row select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-repeat: no-repeat;
+        background-position: center;
+        padding-right: 20px;
+        cursor: pointer;
+      }
+      .input-row .icon {
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+        margin-left: 8px;
+      }
+      #withdraw-amount-group .input-row {
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--binance-border-gray);
+      }
+      #withdraw-amount-group .amount-input {
+        font-size: 24px;
+        font-weight: 600;
+      }
+      #withdraw-amount-group .currency-max-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      #withdraw-amount-group .currency-max-group .symbol {
+        font-size: 16px;
+        font-weight: 600;
+      }
+      #withdraw-amount-group .currency-max-group .max-btn {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--binance-yellow);
+        cursor: pointer;
+      }
+      #withdraw-amount-group .balance-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: var(--binance-gray);
+        margin-top: 12px;
+      }
+      .warning-text {
+        font-size: 13px;
+        color: var(--binance-gray);
+        line-height: 1.6;
+        margin-top: 8px;
+      }
+      .warning-text .link {
+        color: var(--binance-yellow);
+        text-decoration: none;
+      }
+      #send-view .page-footer {
+        background-color: white;
+        padding: 16px;
+        border-top: 1px solid var(--binance-border-gray);
+        flex-shrink: 0;
+      }
+      .footer-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .footer-summary .label {
+        font-size: 14px;
+        color: var(--binance-gray);
+      }
+      .footer-summary .value {
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .send-btn {
+        width: 100%;
+        padding: 14px;
+        border-radius: 8px;
+        border: none;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        background-color: #eaecef;
+        color: #bdc2c8;
+        transition: all 0.2s ease;
+      }
+      .send-btn.active {
+        background-color: var(--binance-yellow);
+        color: var(--binance-dark);
+      }
+      #receipt-view {
+        background-color: white;
+      }
+      .receipt-header {
+        text-align: center;
+        padding: 40px 20px 30px 20px;
+        background-color: white;
+      }
+      .receipt-header .success-icon {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 16px;
+      }
+      .receipt-header h1 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .receipt-header .amount {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+      .receipt-header .status {
+        font-size: 14px;
+        color: var(--binance-gray);
+      }
+      .receipt-details {
+        background-color: white;
+        margin: 0 16px;
+        border-radius: 8px;
+        border: 1px solid var(--binance-light-gray);
+      }
+      .detail-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 16px;
+        font-size: 15px;
+        border-bottom: 1px solid var(--binance-light-gray);
+      }
+      .detail-item:last-child {
+        border-bottom: none;
+      }
+      .detail-item .label {
+        color: var(--binance-gray);
+      }
+      .detail-item .value {
+        font-weight: 500;
+        text-align: right;
+      }
+      .recipient-info .value {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+      .recipient-info .add-alias {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--binance-yellow);
+        cursor: pointer;
+        margin-top: 4px;
+      }
+      .order-id .value {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .order-id .copy-icon {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
+      #receipt-view .page-footer {
+        margin-top: auto;
+        padding: 16px;
+        background-color: white;
+      }
+      .send-another-btn {
+        width: 100%;
+        padding: 14px;
+        border-radius: 8px;
+        border: none;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        background-color: var(--binance-yellow);
+        color: var(--binance-dark);
+      }
+      .overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+      .overlay.active {
+        display: flex;
+      }
+      .loading-spinner {
+        border: 4px solid rgba(255, 255, 255, 0.2);
+        border-left-color: white;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app-container">
+      <!-- VIEW 1: SEND PAGE -->
+      <div id="send-view" class="view active">
+        <header class="page-header">
+          <a href="home.html" class="back-arrow"
+            ><img src="icons/arrow-l.jpg" alt="Back"
+          /></a>
+          <h2 id="page-title" class="title">Send Crypto</h2>
+          <div class="header-action">
+            <img src="icons/help-center.svg" alt="Help" />
+          </div>
+        </header>
+        <main class="main-content">
+          <div class="input-group">
+            <label for="recipient-id-input" class="label">Address</label>
+            <div class="input-row">
+              <input
+                type="text"
+                id="recipient-id-input"
+                placeholder="Enter Binance User ID"
+              />
+              <img
+                src="icons/paste-svgrepo-com-1.png"
+                class="icon"
+                alt="Paste"
+              />
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="network-select" class="label">Network</label>
+            <div class="input-row">
+              <select id="network-select">
+                <option>Loading assets...</option>
+              </select>
+            </div>
+          </div>
+          <div id="withdraw-amount-group" class="input-group">
+            <label for="amount-input" class="label">Withdraw Amount</label>
+            <div class="input-row">
+              <input
+                type="number"
+                id="amount-input"
+                class="amount-input"
+                placeholder="Minimum 0"
+              />
+              <div class="currency-max-group">
+                <span id="amount-currency-symbol" class="symbol">USDT</span>
+                <span id="max-btn" class="max-btn">Max</span>
+              </div>
+            </div>
+            <div class="balance-info">
+              <span>Available</span>
+              <span id="available-balance">0.00 USDT</span>
+            </div>
+          </div>
+          <p class="warning-text">
+            * Do not withdraw directly to a crowdfund or ICO. We will not credit
+            your account with tokens from that sale.
+          </p>
+          <p class="warning-text">
+            * Do not transact with Sanctioned Entities.
+            <a href="#" class="link">Learn more</a>
+          </p>
+        </main>
+        <footer class="page-footer">
+          <div class="footer-summary">
+            <span class="label">Receive amount</span>
+            <span id="receive-amount" class="value">0.00 USDT</span>
+          </div>
+          <div class="footer-summary">
+            <span class="label">Network fee</span>
+            <span class="value">0.00 USDT</span>
+          </div>
+          <button id="send-btn" class="send-btn">Withdraw</button>
+        </footer>
+      </div>
+      <!-- VIEW 2: RECEIPT PAGE -->
+      <div id="receipt-view" class="view">
+        <header class="receipt-header">
+          <img
+            class="success-icon"
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 52'%3E%3Ccircle cx='26' cy='26' r='25' fill='%230ECB81'/%3E%3Cpath fill='none' stroke='%23FFF' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' d='M14.1 27.2l7.1 7.2 16.7-16.8'/%3E%3C/svg%3E"
+            alt="Success"
+          />
+          <h1>Payment Successful</h1>
+          <p id="receipt-amount" class="amount">0.00 USDT</p>
+          <p class="status">
+            The recipient can check the balance in the Funding Account
+          </p>
+        </header>
+        <main class="receipt-details">
+          <div class="detail-item recipient-info">
+            <span class="label">To</span>
+            <div class="value">
+              <span id="receipt-recipient-id">User-XXXX</span>
+              <span class="add-alias">Add Alias</span>
+            </div>
+          </div>
+          <div class="detail-item order-id">
+            <span class="label">Order ID</span>
+            <div class="value">
+              <span id="receipt-order-id">0000000000000000</span>
+              <!-- NEW: Added ID for easy selection -->
+              <img
+                id="copy-order-id-icon"
+                class="copy-icon"
+                src="icons/Copy-05.png"
+                alt="Copy"
+              />
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="label">Payment Method</span>
+            <span id="receipt-payment-method" class="value">Spot Account</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Paid With</span>
+            <span id="receipt-paid-with" class="value">0.00 USDT</span>
+          </div>
+        </main>
+        <footer class="page-footer">
+          <button id="send-another-btn" class="send-another-btn">
+            Send Another Transaction
+          </button>
+        </footer>
+      </div>
+      <!-- SHARED OVERLAY & AUDIO -->
+      <div id="loading-overlay" class="overlay">
+        <div class="loading-spinner"></div>
+      </div>
+      <!-- NEW: Added audio element -->
+      <audio
+        id="success-sound"
+        src="audio/successed-295058.mp3"
+        preload="auto"
+      ></audio>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const APP_STORAGE_KEY = "binanceCloneData_v1";
+        let appState = {},
+          ownedAssets = [],
+          selectedAsset = {};
+        const loadState = () => {
+          try {
+            const savedState = localStorage.getItem(APP_STORAGE_KEY);
+            if (!savedState) {
+              window.location.href = "home.html";
+              return;
+            }
+            appState = JSON.parse(savedState);
+            if (!appState.wallet) appState.wallet = {};
+            if (!appState.transactions) appState.transactions = [];
+          } catch (e) {
+            console.error("Failed to load state", e);
+            window.location.href = "home.html";
+          }
+        };
+        const saveState = () =>
+          localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(appState));
+
+        const handleSend = () => {
+          showOverlay("loading-overlay");
+          const amount = parseFloat(
+            document.getElementById("amount-input").value
+          );
+          const recipientId =
+            document.getElementById("recipient-id-input").value;
+          if (
+            !recipientId ||
+            isNaN(amount) ||
+            amount <= 0 ||
+            amount > selectedAsset.balance
+          ) {
+            alert("Invalid details or insufficient balance.");
+            hideOverlay("loading-overlay");
+            return;
+          }
+
+          setTimeout(() => {
+            loadState();
+            const orderId = `${Date.now()}${Math.random()
+              .toString()
+              .slice(2, 10)}`;
+            const assetSymbolLower = selectedAsset.symbol.toLowerCase();
+            const usdValueDeducted = amount * selectedAsset.price;
+            appState.wallet[assetSymbolLower] -= amount;
+            appState.wallet.est_total_value -= usdValueDeducted;
+            const transaction = {
+              id: orderId,
+              type: "Send",
+              date: new Date().toISOString(),
+              amount: amount,
+              currencySymbol: selectedAsset.symbol,
+              usdValue: usdValueDeducted,
+              recipientId: recipientId,
+              paymentMethod: "Spot Account",
+            };
+            appState.transactions.unshift(transaction);
+            saveState();
+
+            // Play sound and render the receipt view
+            document
+              .getElementById("success-sound")
+              .play()
+              .catch((e) => console.error("Audio playback failed:", e));
+            renderReceipt(transaction);
+            showView("receipt-view");
+            hideOverlay("loading-overlay");
+          }, 1500);
+        };
+
+        const showView = (viewId) => {
+          document
+            .querySelectorAll(".view")
+            .forEach((v) => v.classList.remove("active"));
+          document.getElementById(viewId)?.classList.add("active");
+        };
+        const renderReceipt = (tx) => {
+          const amountString = `${tx.amount.toFixed(2)} ${tx.currencySymbol}`;
+          document.getElementById("receipt-amount").textContent = amountString;
+          document.getElementById("receipt-recipient-id").textContent =
+            tx.recipientId;
+          document.getElementById("receipt-order-id").textContent = tx.id;
+          document.getElementById("receipt-paid-with").textContent =
+            amountString;
+        };
+        const populateCurrencySelector = async () => {
+          const selectEl = document.getElementById("network-select");
+          selectEl.innerHTML = `<option>Fetching assets...</option>`;
+          selectEl.disabled = true;
+          try {
+            const walletKeys = Object.keys(appState.wallet).filter(
+              (k) => k !== "usd_balance" && k !== "est_total_value"
+            );
+            if (walletKeys.length === 0) {
+              selectEl.innerHTML = `<option>No assets available</option>`;
+              document.getElementById("send-btn").disabled = true;
+              return;
+            }
+            const response = await fetch(
+              `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&symbols=${walletKeys.join(
+                ","
+              )}&order=market_cap_desc`
+            );
+            const marketData = await response.json();
+            ownedAssets = marketData
+              .map((coin) => ({
+                symbol: coin.symbol.toUpperCase(),
+                name: coin.name,
+                image: coin.image,
+                price: coin.current_price,
+                balance: appState.wallet[coin.symbol.toLowerCase()] || 0,
+              }))
+              .filter((asset) => asset.balance > 0);
+            if (ownedAssets.length === 0) {
+              selectEl.innerHTML = `<option>No assets with balance</option>`;
+              document.getElementById("send-btn").disabled = true;
+              return;
+            }
+            selectEl.innerHTML = ownedAssets
+              .map(
+                (asset, index) =>
+                  `<option value="${index}">${asset.name}</option>`
+              )
+              .join("");
+            selectEl.disabled = false;
+            updateUIForSelectedCurrency();
+          } catch (e) {
+            console.error("Could not fetch asset prices:", e);
+            selectEl.innerHTML = `<option>Error loading assets</option>`;
+          }
+        };
+        const updateUIForSelectedCurrency = () => {
+          const selectEl = document.getElementById("network-select");
+          selectedAsset = ownedAssets[selectEl.value];
+          if (!selectedAsset) return;
+          document.getElementById(
+            "page-title"
+          ).textContent = `Send ${selectedAsset.symbol}`;
+          document.getElementById("amount-currency-symbol").textContent =
+            selectedAsset.symbol;
+          document.getElementById(
+            "available-balance"
+          ).textContent = `${selectedAsset.balance.toFixed(8)} ${
+            selectedAsset.symbol
+          }`;
+          resetSendInputs();
+        };
+        const resetSendInputs = () => {
+          document.getElementById("amount-input").value = "";
+          document.getElementById("recipient-id-input").value = "";
+          updateFooterSummary();
+          validateAllInputs();
+        };
+        const updateFooterSummary = () => {
+          const amount =
+            parseFloat(document.getElementById("amount-input").value) || 0;
+          const symbol = selectedAsset.symbol || "";
+          document.getElementById(
+            "receive-amount"
+          ).textContent = `${amount.toFixed(2)} ${symbol}`;
+        };
+        const validateAllInputs = () => {
+          const amount = parseFloat(
+            document.getElementById("amount-input").value
+          );
+          const recipientId =
+            document.getElementById("recipient-id-input").value;
+          const sendBtn = document.getElementById("send-btn");
+          const isAmountValid =
+            !isNaN(amount) &&
+            amount > 0 &&
+            selectedAsset &&
+            amount <= selectedAsset.balance;
+          const isRecipientValid = recipientId.trim() !== "";
+          sendBtn.classList.toggle("active", isAmountValid && isRecipientValid);
+        };
+
+        const setupEventListeners = () => {
+          document
+            .getElementById("network-select")
+            .addEventListener("change", updateUIForSelectedCurrency);
+          document
+            .getElementById("amount-input")
+            .addEventListener("input", () => {
+              updateFooterSummary();
+              validateAllInputs();
+            });
+          document
+            .getElementById("recipient-id-input")
+            .addEventListener("input", validateAllInputs);
+          document.getElementById("max-btn").addEventListener("click", () => {
+            if (selectedAsset.balance) {
+              document.getElementById("amount-input").value =
+                selectedAsset.balance.toFixed(8);
+              updateFooterSummary();
+              validateAllInputs();
+            }
+          });
+          document.getElementById("send-btn").addEventListener("click", () => {
+            if (
+              document.getElementById("send-btn").classList.contains("active")
+            ) {
+              handleSend();
+            }
+          });
+          document
+            .getElementById("send-another-btn")
+            .addEventListener("click", () => {
+              resetSendInputs();
+              showView("send-view");
+            });
+
+          // --- NEW: Copy Order ID Event Listener ---
+          document
+            .getElementById("copy-order-id-icon")
+            .addEventListener("click", () => {
+              const orderId =
+                document.getElementById("receipt-order-id").textContent;
+              if (navigator.clipboard) {
+                navigator.clipboard
+                  .writeText(orderId)
+                  .then(() => {
+                    alert(`Order ID copied: ${orderId}`);
+                  })
+                  .catch((err) => {
+                    console.error("Failed to copy Order ID: ", err);
+                    alert("Failed to copy ID.");
+                  });
+              } else {
+                alert("Clipboard API not available.");
+              }
+            });
+        };
+
+        const showOverlay = (id) =>
+          document.getElementById(id)?.classList.add("active");
+        const hideOverlay = (id) =>
+          document.getElementById(id)?.classList.remove("active");
+        loadState();
+        populateCurrencySelector();
+        setupEventListeners();
+      });
+    </script>
+  </body>
+</html>
