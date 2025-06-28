@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Account - Binance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ALL CSS IS UNCHANGED */
+      :root {
+        --binance-yellow: #fcd535;
+        --binance-dark: #1e2329;
+        --binance-gray: #848e9c;
+        --binance-light-gray: #f5f5f5;
+        --binance-border-gray: #eaecef;
+        --binance-green-tag-bg: #e6f8f1;
+        --binance-green-tag-text: #17b37e;
+        --binance-gray-tag-bg: #efefef;
+        --binance-gray-tag-text: #707a8a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        color: var(--binance-dark);
+        background-color: white;
+      }
+      #app-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+      .view {
+        width: 100%;
+        height: 100%;
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: white;
+        animation: fadeIn 0.3s ease-in-out;
+      }
+      .view.active {
+        display: flex;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        position: relative;
+        flex-shrink: 0;
+        background-color: white;
+      }
+      .page-header .back-arrow,
+      .page-header .header-action {
+        cursor: pointer;
+        position: absolute;
+      }
+      .page-header .back-arrow {
+        left: 16px;
+      }
+      .page-header .header-action {
+        right: 16px;
+        display: flex;
+        gap: 20px;
+      }
+      .page-header img {
+        width: 22px;
+        height: 22px;
+      }
+      .page-header .title {
+        font-size: 18px;
+        font-weight: 600;
+      }
+      #profile-hub-view .main-content {
+        padding: 16px;
+      }
+      .user-summary-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        margin-bottom: 32px;
+      }
+      .user-summary-card .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background-color: var(--binance-light-gray);
+        object-fit: cover;
+      }
+      .user-summary-card .user-details {
+        flex-grow: 1;
+      }
+      .user-summary-card .user-details .id {
+        font-size: 13px;
+        color: var(--binance-gray);
+      }
+      .user-summary-card .user-details .username {
+        font-size: 18px;
+        font-weight: 600;
+      }
+      .user-summary-card .user-details .tags {
+        display: flex;
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .tag {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 8px;
+        border-radius: 4px;
+      }
+      .tag.regular {
+        background-color: var(--binance-gray-tag-bg);
+        color: var(--binance-gray-tag-text);
+      }
+      .tag.verified {
+        background-color: var(--binance-green-tag-bg);
+        color: var(--binance-green-tag-text);
+      }
+      .user-summary-card .arrow-icon {
+        width: 18px;
+        height: 18px;
+      }
+      .icon-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 28px 0;
+      }
+      .icon-grid-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--binance-dark);
+        text-decoration: none;
+        text-align: center;
+      }
+      .icon-grid-item img {
+        width: 28px;
+        height: 28px;
+      }
+      #profile-hub-view .page-footer {
+        margin-top: auto;
+        padding: 16px;
+      }
+      .pro-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: white;
+        padding: 12px;
+        border-radius: 40px;
+        text-decoration: none;
+        border: 0.1px solid #1e23293b;
+        color: var(--binance-dark);
+      }
+      .pro-link .arrow-icon {
+        width: 18px;
+        height: 18px;
+      }
+      .pro-link-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+      }
+      .pro-link-left img {
+        width: 24px;
+        height: 24px;
+      }
+      .pro-link-left .pro-tag {
+        color: var(--binance-yellow);
+        font-size: 12px;
+        font-weight: 500;
+        margin-left: 4px;
+      }
+      #account-center-view .main-content {
+        padding: 16px;
+      }
+      .user-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+      .user-card .avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background-color: var(--binance-light-gray);
+        object-fit: cover;
+      }
+      .user-card .username {
+        flex-grow: 1;
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .user-card .edit-icon {
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+      }
+      .settings-list {
+        list-style: none;
+      }
+      .settings-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 0;
+        border-bottom: 1px solid var(--binance-border-gray);
+        cursor: pointer;
+      }
+      .settings-item-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 16px;
+        font-weight: 500;
+      }
+      .settings-item-left .icon {
+        width: 20px;
+        height: 20px;
+      }
+      .settings-item-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--binance-gray);
+      }
+      .settings-item-right .icon,
+      .settings-item-right .arrow-icon {
+        width: 20px;
+        height: 20px;
+      }
+      #account-center-view .page-footer {
+        margin-top: auto;
+        padding: 24px 16px;
+        display: flex;
+        gap: 12px;
+      }
+      .footer-btn {
+        flex: 1;
+        padding: 14px;
+        border-radius: 8px;
+        border: none;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background-color: var(--binance-yellow);
+        color: var(--binance-dark);
+      }
+      .btn-secondary {
+        background-color: var(--binance-light-gray);
+        color: var(--binance-dark);
+      }
+      #edit-profile-view {
+        background-color: var(--binance-light-gray);
+      }
+      #edit-profile-view .main-content {
+        padding: 16px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .edit-avatar-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 24px 0;
+      }
+      .edit-avatar-wrapper {
+        position: relative;
+        margin-bottom: 8px;
+        cursor: pointer;
+      }
+      .edit-avatar-wrapper .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        object-fit: cover;
+      }
+      .edit-avatar-wrapper .camera-icon {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background-color: #00000054;
+        border-radius: 50%;
+        padding: 4px;
+        width: 24px;
+        height: 24px;
+      }
+
+      .edit-avatar-section .disclaimer {
+        font-size: 13px;
+        color: var(--binance-gray);
+      }
+      .edit-form-section {
+        margin-top: 16px;
+      }
+      .edit-form-section .label {
+        font-size: 14px;
+        color: var(--binance-gray);
+        margin-bottom: 8px;
+        display: block;
+      }
+      .input-wrapper {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        padding: 14px;
+        border-radius: 8px;
+      }
+      .input-wrapper input {
+        flex-grow: 1;
+        border: none;
+        outline: none;
+        font-size: 16px;
+        background: transparent;
+      }
+      .input-wrapper .char-counter {
+        font-size: 14px;
+        color: var(--binance-gray);
+      }
+      .edit-form-section .disclaimer {
+        font-size: 13px;
+        color: var(--binance-gray);
+        margin-top: 8px;
+      }
+      #edit-profile-view .page-footer {
+        margin-top: auto;
+        padding-top: 24px;
+      }
+      .save-btn {
+        width: 100%;
+        padding: 14px;
+        border-radius: 8px;
+        border: none;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .save-btn:disabled {
+        background-color: #f0f0f0;
+        color: #c0c4cc;
+      }
+      .final-disclaimer {
+        font-size: 13px;
+        color: var(--binance-gray);
+        margin-top: 16px;
+        text-align: center;
+      }
+      .overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.4);
+        animation: fadeIn 0.2s ease;
+      }
+      .overlay.active {
+        display: flex;
+      }
+      .modal {
+        background: white;
+        padding: 24px;
+        border-radius: 16px;
+        text-align: center;
+        width: 90%;
+        max-width: 320px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+      #edit-modal {
+        max-width: 340px;
+      }
+      .modal h3 {
+        margin-bottom: 8px;
+        font-size: 18px;
+      }
+      .modal p {
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: var(--binance-gray);
+      }
+      .modal button {
+        background-color: var(--binance-yellow);
+        border: none;
+        border-radius: 8px;
+        padding: 12px 24px;
+        width: 100%;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .edit-modal .input-field {
+        margin-bottom: 16px;
+        text-align: left;
+      }
+      .edit-modal .input-field label {
+        font-size: 14px;
+        color: var(--binance-gray);
+        margin-bottom: 8px;
+        display: block;
+      }
+      .edit-modal .input-field input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--binance-border-gray);
+        border-radius: 8px;
+        font-size: 16px;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+      }
+      .modal-actions button {
+        flex: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app-container">
+      <!-- VIEW 1: PROFILE HUB -->
+      <div id="profile-hub-view" class="view active">
+        <header class="page-header" style="border: none">
+          <a href="home.html" class="back-arrow"
+            ><img src="icons/arrow-l.jpg" alt="Back"
+          /></a>
+          <h2 class="title"></h2>
+          <div class="header-action">
+            <img src="icons/headset.jpg" alt="Support" class="demo-feature" />
+            <img src="icons/setting.jpg" alt="Settings" class="demo-feature" />
+          </div>
+        </header>
+        <main class="main-content">
+          <div id="user-summary-card" class="user-summary-card">
+            <!-- Added ID for easier selection -->
+            <img
+              id="hub-avatar"
+              src="icons/user-icon.jpg"
+              alt="Avatar"
+              class="avatar"
+            />
+            <div class="user-details">
+              <p id="hub-user-id" class="id">ID: 12345678</p>
+              <p id="hub-username" class="username">User-xxxx</p>
+              <div class="tags">
+                <span class="tag regular">Regular</span>
+                <span class="tag verified">Verified</span>
+              </div>
+            </div>
+            <img src="icons/arrowr.jpg" alt="Go" class="arrow-icon" />
+          </div>
+          <div class="icon-grid">
+            <a href="#" class="icon-grid-item demo-feature"
+              ><img src="icons/b-wallet.jpg" alt="" />Binance<br />Wallet</a
+            >
+            <a href="add-funds.html" class="icon-grid-item"
+              ><img src="icons/b-deposit.jpg" alt="" />Deposit</a
+            >
+            <a href="#" class="icon-grid-item demo-feature"
+              ><img src="icons/b-convert.jpg" alt="" />Convert</a
+            >
+            <a href="#" class="icon-grid-item demo-feature"
+              ><img src="icons/b-referral.jpg" alt="" />Referral</a
+            >
+            <a href="#" class="icon-grid-item demo-feature"
+              ><img src="icons/b-reward.jpg" alt="" />Rewards Hub</a
+            >
+            <a href="#" class="icon-grid-item demo-feature"
+              ><img src="icons/b-support.jpg" alt="" />Support</a
+            >
+            <a href="#" class="icon-grid-item demo-feature"
+              ><img src="icons/b-traders.jpg" alt="" />Traders<br />League</a
+            >
+            <a href="#" class="icon-grid-item"></a>
+          </div>
+        </main>
+        <footer class="page-footer">
+          <a href="#" class="pro-link demo-feature">
+            <div class="pro-link-left">
+              <img src="icons/binaceacc.jpg" alt="" />
+              <span>BINANCE<span class="pro-tag">Pro</span></span>
+            </div>
+            <img src="icons/arrowr.jpg" alt="Go" class="arrow-icon" />
+          </a>
+        </footer>
+      </div>
+
+      <!-- VIEW 2: ACCOUNT CENTER -->
+      <div id="account-center-view" class="view">
+        <header class="page-header">
+          <div class="back-arrow" data-target="profile-hub-view">
+            <img src="icons/arrow-l.jpg" alt="Back" />
+          </div>
+          <h2 class="title">Account Center</h2>
+        </header>
+        <main class="main-content">
+          <div class="user-card">
+            <!-- Added ID for easier selection -->
+            <img
+              id="center-avatar"
+              src="icons/avatar.svg"
+              alt="Avatar"
+              class="avatar"
+            />
+            <p id="center-username" class="username">User-6c13d</p>
+            <img
+              id="edit-user-btn"
+              src="icons/edit.jpg"
+              alt="Edit"
+              class="edit-icon"
+            />
+          </div>
+          <ul class="settings-list">
+            <li class="settings-item">
+              <span class="settings-item-left">ID</span>
+              <div class="settings-item-right">
+                <span id="center-user-id">956624647</span>
+                <img
+                  id="copy-id-btn"
+                  src="icons/copy.jpg"
+                  alt="Copy"
+                  class="icon"
+                />
+              </div>
+            </li>
+            <li class="settings-item">
+              <span class="settings-item-left">Registration Info</span>
+              <div class="settings-item-right">
+                <span id="center-user-email">ma***@***.com</span>
+                <img
+                  id="toggle-email-btn"
+                  src="icons/eye-off.svg"
+                  alt="Toggle Visibility"
+                  class="icon"
+                />
+              </div>
+            </li>
+          </ul>
+          <ul class="settings-list" style="margin-top: 12px">
+            <li class="settings-item demo-feature">
+              <span class="settings-item-left"
+                ><img src="icons/vip.jpg" alt="" class="icon" />VIP
+                Privilege</span
+              >
+              <div class="settings-item-right">
+                <span class="tag regular">Regular</span>
+                <img src="icons/arrowr.jpg" alt=">" class="arrow-icon" />
+              </div>
+            </li>
+            <li class="settings-item demo-feature">
+              <span class="settings-item-left"
+                ><img
+                  src="icons/veri.jpg"
+                  alt=""
+                  class="icon"
+                />Verifications</span
+              >
+              <div class="settings-item-right">
+                <span class="tag verified">Verified</span>
+                <img src="icons/arrowr.jpg" alt=">" class="arrow-icon" />
+              </div>
+            </li>
+            <li class="settings-item demo-feature">
+              <span class="settings-item-left"
+                ><img
+                  src="icons/security.jpg"
+                  alt=""
+                  class="icon"
+                />Security</span
+              >
+              <div class="settings-item-right">
+                <img src="icons/arrowr.jpg" alt=">" class="arrow-icon" />
+              </div>
+            </li>
+            <li class="settings-item demo-feature" style="border-bottom: none">
+              <span class="settings-item-left"
+                ><img src="icons/x.jpg" alt="" class="icon" />Twitter</span
+              >
+              <div class="settings-item-right">
+                <span>Unlinked</span>
+                <img src="icons/arrowr.jpg" alt=">" class="arrow-icon" />
+              </div>
+            </li>
+          </ul>
+        </main>
+        <footer class="page-footer">
+          <button
+            class="footer-btn btn-primary demo-feature"
+            id="switch-account-btn"
+          >
+            Switch Account
+          </button>
+          <button class="footer-btn btn-secondary" id="logout-btn">
+            Log Out
+          </button>
+        </footer>
+      </div>
+
+      <!-- VIEW 3: EDIT PROFILE -->
+      <div id="edit-profile-view" class="view">
+        <header
+          class="page-header"
+          style="background-color: var(--binance-light-gray); border: none"
+        >
+          <div class="back-arrow" data-target="account-center-view">
+            <img src="icons/arrow-l.jpg" alt="Back" />
+          </div>
+          <h2 class="title">Edit Profile</h2>
+        </header>
+        <main class="main-content">
+          <div class="edit-avatar-section">
+            <div id="edit-avatar-wrapper" class="edit-avatar-wrapper">
+              <!-- Added ID for easier selection -->
+              <img
+                id="edit-avatar"
+                src="icons/user-icon.jpg"
+                alt="Avatar"
+                class="avatar"
+              />
+              <img
+                src="icons/camera-duotone-svgrepo-com.png"
+                alt="Edit Avatar"
+                class="camera-icon"
+              />
+            </div>
+            <p class="disclaimer">
+              Avatar can only be modified 1 time per 7 days.
+            </p>
+          </div>
+          <!-- NEW: Hidden file input for avatar upload -->
+          <input
+            type="file"
+            id="avatar-file-input"
+            accept="image/*"
+            style="display: none"
+          />
+
+          <div class="edit-form-section">
+            <p class="label">Nickname</p>
+            <div class="input-wrapper">
+              <input type="text" id="edit-nickname-input" maxlength="60" />
+              <span id="char-counter" class="char-counter">0/60</span>
+            </div>
+            <p class="disclaimer">
+              Nickname can only be modified 1 time per 7 days.
+            </p>
+          </div>
+          <div class="edit-form-section">
+            <p class="label">Email</p>
+            <div class="input-wrapper">
+              <input type="email" id="edit-email-input" />
+            </div>
+          </div>
+          <footer
+            class="page-footer"
+            style="background: transparent; padding-top: 0"
+          >
+            <button id="save-btn" class="save-btn btn-primary" disabled>
+              Save
+            </button>
+            <p class="final-disclaimer">
+              *Avatar and nickname will also be applied to Binance Square.
+              Abusing them might lead to community penalties.
+            </p>
+          </footer>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const APP_STORAGE_KEY = "binanceCloneData_v1";
+        // MODIFIED: Added default avatar field
+        const defaultUser = {
+          name: "User-6c13d",
+          id: "956624647",
+          email: "martinschris671@gmail.com",
+          avatar: "icons/user-icon.jpg",
+          preferences: { emailVisible: false },
+        };
+        let appState = {};
+        // NEW: A temporary variable to hold the new avatar data before saving
+        let newAvatarData = null;
+
+        const loadState = () => {
+          try {
+            const savedState = localStorage.getItem(APP_STORAGE_KEY);
+            appState = savedState ? JSON.parse(savedState) : {};
+            if (!appState.user || !appState.user.id) {
+              appState.user = defaultUser;
+              saveState();
+            }
+          } catch (e) {
+            console.error("Failed to load state", e);
+          }
+        };
+        const saveState = () =>
+          localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(appState));
+
+        const showView = (viewId) => {
+          document
+            .querySelectorAll(".view")
+            .forEach((v) => v.classList.remove("active"));
+          document.getElementById(viewId)?.classList.add("active");
+        };
+        const maskEmail = (email) => {
+          if (!email || email.indexOf("@") === -1) return "";
+          const [local, domain] = email.split("@");
+          return `${local.slice(0, 2)}***@***.${domain.split(".")[1]}`;
+        };
+
+        const renderAllData = () => {
+          const user = appState.user;
+          document.getElementById("hub-user-id").textContent = `ID: ${user.id}`;
+          document.getElementById("hub-username").textContent = user.name;
+          document.getElementById("center-username").textContent = user.name;
+          document.getElementById("center-user-id").textContent = user.id;
+          const emailVisible = user.preferences.emailVisible;
+          document.getElementById("center-user-email").textContent =
+            emailVisible ? user.email : maskEmail(user.email);
+          document.getElementById("toggle-email-btn").src = emailVisible
+            ? "icons/eyeon.jpg"
+            : "icons/eyeoff.jpg";
+          // NEW: Render avatar on all screens
+          document.getElementById("hub-avatar").src =
+            user.avatar || defaultUser.avatar;
+          document.getElementById("center-avatar").src =
+            user.avatar || defaultUser.avatar;
+          document.getElementById("edit-avatar").src =
+            user.avatar || defaultUser.avatar;
+        };
+
+        const showEditView = () => {
+          const nicknameInput = document.getElementById("edit-nickname-input");
+          const emailInput = document.getElementById("edit-email-input");
+          nicknameInput.value = appState.user.name;
+          emailInput.value = appState.user.email;
+          newAvatarData = null; // Reset temp avatar data on view load
+          updateCharCounter();
+          validateSaveButton();
+          showView("edit-profile-view");
+        };
+
+        const handleSave = () => {
+          const newName = document
+            .getElementById("edit-nickname-input")
+            .value.trim();
+          const newEmail = document
+            .getElementById("edit-email-input")
+            .value.trim();
+          if (newName && newEmail) {
+            appState.user.name = newName;
+            appState.user.email = newEmail;
+            // NEW: If a new avatar was selected, save it
+            if (newAvatarData) {
+              appState.user.avatar = newAvatarData;
+            }
+            saveState();
+            renderAllData();
+            showView("account-center-view");
+          } else {
+            alert("Fields cannot be empty.");
+          }
+        };
+
+        const updateCharCounter = () => {
+          const nicknameInput = document.getElementById("edit-nickname-input");
+          const charCounter = document.getElementById("char-counter");
+          charCounter.textContent = `${nicknameInput.value.length}/60`;
+        };
+
+        const validateSaveButton = () => {
+          const nicknameInput = document.getElementById("edit-nickname-input");
+          const emailInput = document.getElementById("edit-email-input");
+          const saveBtn = document.getElementById("save-btn");
+          // MODIFIED: Also check if avatar has changed
+          const hasTextChanged =
+            nicknameInput.value !== appState.user.name ||
+            emailInput.value !== appState.user.email;
+          const hasAvatarChanged = newAvatarData !== null;
+          const isValid =
+            nicknameInput.value.trim() !== "" && emailInput.value.trim() !== "";
+          saveBtn.disabled = !((hasTextChanged || hasAvatarChanged) && isValid);
+        };
+
+        const handleLogout = () => {
+          if (confirm("Are you sure you want to log out?")) {
+            localStorage.removeItem(APP_STORAGE_KEY);
+            window.location.href = "index.html";
+          }
+        };
+
+        const setupEventListeners = () => {
+          document
+            .getElementById("user-summary-card")
+            .addEventListener("click", () => showView("account-center-view"));
+          document
+            .querySelectorAll(".back-arrow")
+            .forEach((arrow) =>
+              arrow.addEventListener("click", (e) =>
+                showView(e.currentTarget.dataset.target)
+              )
+            );
+          document
+            .getElementById("edit-user-btn")
+            .addEventListener("click", showEditView);
+          document
+            .getElementById("copy-id-btn")
+            .addEventListener("click", () =>
+              navigator.clipboard
+                .writeText(appState.user.id)
+                .then(() => alert("User ID copied!"))
+            );
+          document
+            .getElementById("toggle-email-btn")
+            .addEventListener("click", () => {
+              appState.user.preferences.emailVisible =
+                !appState.user.preferences.emailVisible;
+              saveState();
+              renderAllData();
+            });
+          document
+            .getElementById("save-btn")
+            .addEventListener("click", handleSave);
+          document
+            .getElementById("edit-nickname-input")
+            .addEventListener("input", () => {
+              updateCharCounter();
+              validateSaveButton();
+            });
+          document
+            .getElementById("edit-email-input")
+            .addEventListener("input", validateSaveButton);
+          document.querySelectorAll(".demo-feature").forEach((el) =>
+            el.addEventListener("click", (e) => {
+              e.preventDefault();
+              alert("Feature not implemented in this demo.");
+            })
+          );
+          document
+            .getElementById("logout-btn")
+            .addEventListener("click", handleLogout);
+
+          // --- NEW: AVATAR EDITING EVENT LISTENERS ---
+          const avatarWrapper = document.getElementById("edit-avatar-wrapper");
+          const avatarFileInput = document.getElementById("avatar-file-input");
+
+          avatarWrapper.addEventListener("click", () => {
+            avatarFileInput.click(); // Trigger the hidden file input
+          });
+
+          avatarFileInput.addEventListener("change", (event) => {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith("image/")) {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                newAvatarData = e.target.result; // Store new avatar data temporarily
+                // Show a live preview
+                document.getElementById("edit-avatar").src = newAvatarData;
+                validateSaveButton(); // Enable save button
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+        };
+
+        loadState();
+        renderAllData();
+        setupEventListeners();
+      });
+    </script>
+  </body>
+</html>
