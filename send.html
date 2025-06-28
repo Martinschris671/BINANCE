@@ -15,452 +15,221 @@
     />
     <style>
       :root {
-        --binance-yellow: #fcd535;
-        --binance-dark: #1e2329;
-        --binance-gray: #848e9c;
-        --binance-light-gray: #f5f5f5;
-        --binance-border-gray: #eaecef;
+          --binance-yellow: #fcd535;
+          --binance-dark: #1e2329;
+          --binance-gray: #848e9c;
+          --binance-light-gray: #f5f5f5;
+          --binance-border-gray: #eaecef;
       }
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent;
-      }
-      html,
-      body {
-        height: 100%;
-        overflow: hidden;
-        background-color: white;
-      }
-      body {
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, sans-serif;
-        color: var(--binance-dark);
-      }
-      #app-container {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        position: relative;
-      }
+      * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+      html, body { height: 100%; overflow: hidden; background-color: white; }
+      body { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--binance-dark); }
+      #app-container { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
 
-      .view {
-        width: 100%;
-        height: 100%;
-        display: none;
-        flex-direction: column;
-        position: absolute;
-        top: 0;
-        left: 0;
-        background-color: white;
-        animation: fadeIn 0.3s ease-in-out;
-      }
-      .view.active {
-        display: flex;
-      }
-      @keyframes fadeIn {
-        from {
+      .view { width: 100%; height: 100%; display: none; flex-direction: column; position: absolute; top: 0; left: 0; background-color: white; animation: fadeIn 0.3s ease-in-out; }
+      .view.active { display: flex; }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+      .page-header { display: flex; align-items: center; justify-content: center; padding: 16px; position: relative; flex-shrink: 0; background-color: white; border-bottom: 1px solid var(--binance-border-gray); }
+      .page-header .back-arrow, .page-header .header-action { cursor: pointer; }
+      .page-header .back-arrow { position: absolute; left: 16px; }
+      .page-header .header-action { position: absolute; right: 16px; }
+      .page-header img { width: 22px; height: 22px; }
+      .page-header .help img { width: 19px; }
+      .page-header .title { font-size: 18px; font-weight: 600; }
+
+      #choose-currency-view .main-content { flex-grow: 1; overflow-y: auto; padding: 0 16px; }
+      .search-bar-wrapper { padding: 16px; }
+      .search-bar { display: flex; align-items: center; gap: 8px; background-color: var(--binance-light-gray); border-radius: 8px; padding: 10px 12px; }
+      .search-bar img { width: 18px; height: 18px; }
+      .search-bar input { border: none; outline: none; background: transparent; font-size: 16px; flex-grow: 1; font-family: inherit; }
+      .list-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px 12px 16px; }
+      .list-header .title { font-size: 16px; font-weight: 600; }
+      .list-header img { width: 20px; height: 20px; }
+      .asset-list { list-style: none; }
+      .asset-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; cursor: pointer; }
+      .asset-info { display: flex; align-items: center; gap: 12px; }
+      .asset-info .icon { width: 32px; height: 32px; }
+      .asset-info .name-group .name { font-size: 16px; font-weight: 500; }
+      .asset-info .name-group .symbol { font-size: 13px; color: var(--binance-gray); margin-top: 2px; }
+      .asset-balance { text-align: right; }
+      .asset-balance .crypto-amount { font-size: 16px; font-weight: 500; }
+      .asset-balance .usd-equivalent { font-size: 13px; color: var(--binance-gray); margin-top: 2px; }
+
+      #send-view { background-color: white; }
+      #send-view .main-content { flex-grow: 1; overflow-y: auto; padding: 16px; }
+      .form-section { margin-bottom: 24px; }
+      .form-section .label { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--binance-gray); margin-bottom: 8px; }
+      .form-section .label img { width: 20px; height: 20px; }
+      .input-container { background-color: var(--binance-light-gray); padding: 12px 16px; border-radius: 8px; }
+      .input-row { display: flex; align-items: center; justify-content: space-between; }
+      .input-row input { border: none; outline: none; background: transparent; font-size: 16px; width: 100%; font-family: inherit; color: #242424; }
+      .input-row input::placeholder { color: #cfcfcf; }
+      .select-imitation { color: var(--binance-dark); display: flex; justify-content: space-between; align-items: center; font-size: 16px; width: 100%; cursor: pointer; }
+      .select-imitation.placeholder { color: #cfcfcf; }
+      .select-imitation img { width: 18px; height: 18px; }
+      .address-icons { display: flex; align-items: center; gap: 16px; }
+      .address-icons img { width: 22px; height: 22px; cursor: pointer; }
+      .amount-input { font-size: 24px; font-weight: 500; letter-spacing: -0.5px; }
+      .currency-max-group { display: flex; align-items: center; gap: 12px; }
+      .currency-max-group .symbol { font-size: 16px; font-weight: 500; }
+      .currency-max-group .max-btn { font-size: 16px; font-weight: 500; color: var(--binance-yellow); cursor: pointer; }
+      .available-balance-container { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--binance-gray); margin-top: 12px; cursor: pointer; }
+      .available-balance-container img { width: 10px; height: 11px; margin-left: 0.5rem; }
+      .warning-text { font-size: 13px; color: var(--binance-gray); line-height: 1.6; padding: 0; margin-top: 24px; }
+      .warning-text .link { color: var(--binance-yellow); text-decoration: none; }
+      #send-view .page-footer { background-color: white; padding: 12px 16px; border-top: 1px solid var(--binance-border-gray); flex-shrink: 0; }
+      .footer-content { display: flex; justify-content: space-between; align-items: center; }
+      .summary-details .receive-amount-group .label { font-size: 14px; color: var(--binance-gray); }
+      .summary-details .receive-amount-group .value { font-size: 18px; font-weight: 600; margin-top: 2px; }
+      .summary-details .network-fee-label { font-size: 13px; color: var(--binance-gray); margin-top: 4px; }
+      .send-btn { padding: 14px 28px; border-radius: 24px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; background-color: #f5f5f5; color: #c0c4cc; transition: all 0.2s ease; white-space: nowrap; }
+      .send-btn.active { background-color: var(--binance-yellow); color: var(--binance-dark); }
+
+      #receipt-view { background-color: white; }
+      .receipt-header { text-align: center; padding: 40px 20px 30px 20px; }
+      .receipt-header .success-icon { width: 64px; height: 64px; margin-bottom: 16px; }
+      .receipt-header h1 { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+      .receipt-header .amount { font-size: 28px; font-weight: 700; margin-bottom: 12px; }
+      .receipt-header .status { font-size: 14px; color: var(--binance-gray); }
+      .receipt-details { margin: 0 16px; border-radius: 8px; border: 1px solid var(--binance-light-gray); }
+      .detail-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 16px; font-size: 15px; border-bottom: 1px solid var(--binance-light-gray); }
+      .detail-item:last-child { border-bottom: none; }
+      .detail-item .label { color: var(--binance-gray); }
+      .detail-item .value { font-weight: 500; text-align: right; }
+      .recipient-info .value { display: flex; flex-direction: column; align-items: flex-end; }
+      .recipient-info .add-alias { font-size: 13px; font-weight: 600; color: var(--binance-yellow); cursor: pointer; margin-top: 4px; }
+      .order-id .value { display: flex; align-items: center; gap: 8px; }
+      .order-id .copy-icon { width: 16px; height: 16px; cursor: pointer; }
+      #receipt-view .page-footer { margin-top: auto; padding: 16px; }
+      .send-another-btn { width: 100%; padding: 14px; border-radius: 8px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; background-color: var(--binance-yellow); color: var(--binance-dark); }
+
+      /* ======================================================= */
+      /* === NEW: NETWORK OVERLAY STYLES START HERE === */
+      /* ======================================================= */
+      #network-overlay-container {
+          position: fixed;
+          inset: 0;
+          z-index: 1000;
+          background-color: rgba(0,0,0,0.4);
+          display: none; /* Hidden by default */
           opacity: 0;
-        }
-        to {
+          transition: opacity 0.3s ease-in-out;
+      }
+      #network-overlay-container.active {
+          display: block;
           opacity: 1;
-        }
       }
+      .network-modal {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          max-height: 80vh;
+          background-color: white;
+          border-top-left-radius: 16px;
+          border-top-right-radius: 16px;
+          display: flex;
+          flex-direction: column;
+          transform: translateY(100%);
+          transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+      #network-overlay-container.active .network-modal {
+          transform: translateY(0);
+      }
+      .network-modal-header {
+          padding: 12px 16px 16px 16px;
+          text-align: center;
+          position: relative;
+          flex-shrink: 0;
+      }
+      .grabber {
+          width: 40px;
+          height: 4px;
+          background-color: var(--binance-border-gray);
+          border-radius: 2px;
+          margin: 0 auto 12px auto;
+      }
+      .network-modal-header .title {
+          font-size: 18px;
+          font-weight: 600;
+      }
+      .network-modal-content {
+          overflow-y: auto;
+          padding: 0 16px;
+          flex-grow: 1;
+      }
+      .network-list {
+          list-style: none;
+      }
+      .network-item {
+          padding: 16px;
+          border: 1px solid var(--binance-border-gray);
+          border-radius: 8px;
+          margin-bottom: 12px;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          transition: border-color 0.2s ease;
+      }
+      .network-item.selected {
+          border-color: var(--binance-yellow);
+      }
+      .network-details .name {
+          font-size: 16px;
+          font-weight: 500;
+          margin-bottom: 8px;
+      }
+      .network-details .info {
+          font-size: 13px;
+          color: var(--binance-gray);
+          line-height: 1.5;
+      }
+      .network-radio {
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          border: 2px solid #c0c4cc;
+          flex-shrink: 0;
+      }
+      .network-item.selected .network-radio {
+          border-color: var(--binance-dark);
+          background-color: var(--binance-dark;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Ccircle cx='6' cy='6' r='3' fill='white'/%3E%3C/svg%3E");
+          background-position: center;
+          background-repeat: no-repeat;
+      }
+      .network-modal-footer {
+          padding: 16px;
+          flex-shrink: 0;
+      }
+      .warning-box {
+          background-color: var(--binance-light-gray);
+          padding: 12px;
+          border-radius: 8px;
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+      }
+      .warning-box img {
+          width: 20px;
+          height: 20px;
+          margin-top: 2px;
+      }
+      .warning-box p {
+          font-size: 13px;
+          color: var(--binance-gray);
+          line-height: 1.5;
+      }
+      /* ===================================================== */
+      /* === NEW: NETWORK OVERLAY STYLES END HERE === */
+      /* ===================================================== */
 
-      .page-header {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-        position: relative;
-        flex-shrink: 0;
-        background-color: white;
-      }
-      .page-header .back-arrow,
-      .page-header .header-action {
-        cursor: pointer;
-      }
-      .page-header .back-arrow {
-        position: absolute;
-        left: 16px;
-      }
-      .page-header .header-action {
-        position: absolute;
-        right: 16px;
-      }
-      .page-header img {
-        width: 22px;
-        height: 22px;
-      }
-      .page-header .help img {
-        width: 19px;
-      }
-      .page-header .title {
-        font-size: 18px;
-        font-weight: 600;
-      }
-
-      #choose-currency-view .main-content {
-        flex-grow: 1;
-        overflow-y: auto;
-        padding: 0 16px;
-      }
-      .search-bar-wrapper {
-        padding: 16px;
-      }
-      .search-bar {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background-color: var(--binance-light-gray);
-        border-radius: 8px;
-        padding: 10px 12px;
-      }
-      .search-bar img {
-        width: 18px;
-        height: 18px;
-      }
-      .search-bar input {
-        border: none;
-        outline: none;
-        background: transparent;
-        font-size: 16px;
-        flex-grow: 1;
-        font-family: inherit;
-      }
-      .list-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 16px 12px 16px;
-      }
-      .list-header .title {
-        font-size: 16px;
-        font-weight: 600;
-      }
-      .list-header img {
-        width: 20px;
-        height: 20px;
-      }
-      .asset-list {
-        list-style: none;
-      }
-      .asset-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 16px;
-        cursor: pointer;
-      }
-      .asset-info {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .asset-info .icon {
-        width: 32px;
-        height: 32px;
-      }
-      .asset-info .name-group .name {
-        font-size: 16px;
-        font-weight: 500;
-      }
-      .asset-info .name-group .symbol {
-        font-size: 13px;
-        color: var(--binance-gray);
-        margin-top: 2px;
-      }
-      .asset-balance {
-        text-align: right;
-      }
-      .asset-balance .crypto-amount {
-        font-size: 16px;
-        font-weight: 500;
-      }
-      .asset-balance .usd-equivalent {
-        font-size: 13px;
-        color: var(--binance-gray);
-        margin-top: 2px;
-      }
-
-      #send-view {
-        background-color: white;
-      }
-      #send-view .main-content {
-        flex-grow: 1;
-        overflow-y: auto;
-        padding: 16px;
-      }
-      .form-section {
-        margin-bottom: 24px;
-      }
-      .form-section .label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 14px;
-        color: var(--binance-gray);
-        margin-bottom: 8px;
-      }
-      .form-section .label img {
-        width: 20px;
-        height: 20px;
-      }
-      .input-container {
-        background-color: var(--binance-light-gray);
-        padding: 12px 16px;
-        border-radius: 8px;
-      }
-      .input-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      .input-row input {
-        border: none;
-        outline: none;
-        background: transparent;
-        font-size: 16px;
-        width: 100%;
-        font-family: inherit;
-        color: #242424;
-      }
-      .input-row input::placeholder {
-        color: #cfcfcf;
-      }
-      .select-imitation {
-        color: #cfcfcf;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 16px;
-        width: 100%;
-      }
-      .select-imitation img {
-        width: 18px;
-        height: 18px;
-      }
-      .address-icons {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-      .address-icons img {
-        width: 22px;
-        height: 22px;
-        cursor: pointer;
-      }
-      .amount-input {
-        font-size: 24px;
-        font-weight: 500;
-        letter-spacing: -0.5px;
-      }
-      .currency-max-group {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .currency-max-group .symbol {
-        font-size: 16px;
-        font-weight: 500;
-      }
-      .currency-max-group .max-btn {
-        font-size: 16px;
-        font-weight: 500;
-        color: var(--binance-yellow);
-        cursor: pointer;
-      }
-      .available-balance-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 13px;
-        color: var(--binance-gray);
-        margin-top: 12px;
-        cursor: pointer;
-      }
-      .available-balance-container img {
-        width: 10px;
-        height: 11px;
-        margin-left: 0.5rem;
-      }
-      .warning-text {
-        font-size: 13px;
-        color: var(--binance-gray);
-        line-height: 1.6;
-        padding: 0;
-        margin-top: 24px;
-      }
-      .warning-text .link {
-        color: var(--binance-yellow);
-        text-decoration: none;
-      }
-
-      /* ======================================================== */
-      /* === PIXEL-PERFECT FOOTER CSS FROM YOUR SNIPPET START === */
-      /* ======================================================== */
-      #send-view .page-footer {
-        background-color: white;
-        padding: 12px 16px;
-        border-top: 1px solid var(--binance-border-gray);
-        flex-shrink: 0;
-      }
-      .footer-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .summary-details .receive-amount-group .label {
-        font-size: 14px;
-        color: var(--binance-gray);
-      }
-      .summary-details .receive-amount-group .value {
-        font-size: 18px;
-        font-weight: 600;
-        margin-top: 2px;
-      }
-      .summary-details .network-fee-label {
-        font-size: 13px;
-        color: var(--binance-gray);
-        margin-top: 4px;
-      }
-      .send-btn {
-        padding: 14px 28px;
-        border-radius: 24px;
-        border: none;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        background-color: #f5f5f5;
-        color: #c0c4cc;
-        transition: all 0.2s ease;
-        white-space: nowrap;
-      }
-      .send-btn.active {
-        background-color: var(--binance-yellow);
-        color: var(--binance-dark);
-      }
-      /* ====================================================== */
-      /* === PIXEL-PERFECT FOOTER CSS FROM YOUR SNIPPET END === */
-      /* ====================================================== */
-
-      #receipt-view {
-        background-color: white;
-      }
-      .receipt-header {
-        text-align: center;
-        padding: 40px 20px 30px 20px;
-      }
-      .receipt-header .success-icon {
-        width: 64px;
-        height: 64px;
-        margin-bottom: 16px;
-      }
-      .receipt-header h1 {
-        font-size: 20px;
-        font-weight: 600;
-        margin-bottom: 8px;
-      }
-      .receipt-header .amount {
-        font-size: 28px;
-        font-weight: 700;
-        margin-bottom: 12px;
-      }
-      .receipt-header .status {
-        font-size: 14px;
-        color: var(--binance-gray);
-      }
-      .receipt-details {
-        margin: 0 16px;
-        border-radius: 8px;
-        border: 1px solid var(--binance-light-gray);
-      }
-      .detail-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        padding: 16px;
-        font-size: 15px;
-        border-bottom: 1px solid var(--binance-light-gray);
-      }
-      .detail-item:last-child {
-        border-bottom: none;
-      }
-      .detail-item .label {
-        color: var(--binance-gray);
-      }
-      .detail-item .value {
-        font-weight: 500;
-        text-align: right;
-      }
-      .recipient-info .value {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-      }
-      .recipient-info .add-alias {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--binance-yellow);
-        cursor: pointer;
-        margin-top: 4px;
-      }
-      .order-id .value {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .order-id .copy-icon {
-        width: 16px;
-        height: 16px;
-        cursor: pointer;
-      }
-      #receipt-view .page-footer {
-        margin-top: auto;
-        padding: 16px;
-      }
-      .send-another-btn {
-        width: 100%;
-        padding: 14px;
-        border-radius: 8px;
-        border: none;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        background-color: var(--binance-yellow);
-        color: var(--binance-dark);
-      }
-
-      .overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 100;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        background-color: rgba(0, 0, 0, 0.4);
-      }
-      .overlay.active {
-        display: flex;
-      }
-      .loading-spinner {
-        border: 4px solid rgba(255, 255, 255, 0.2);
-        border-left-color: white;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-      }
-      @keyframes spin {
-        from {
-          transform: rotate(0deg);
-        }
-        to {
-          transform: rotate(360deg);
-        }
-      }
+      .overlay { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; background-color: rgba(0,0,0,0.4); }
+      .overlay.active { display: flex; }
+      .loading-spinner { border: 4px solid rgba(255,255,255,0.2); border-left-color: white; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+      @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
   </head>
   <body>
@@ -503,7 +272,6 @@
             <img src="icons/help-center.svg" alt="Help" />
           </div>
         </header>
-
         <main class="main-content">
           <div class="form-section">
             <label class="label">Address</label>
@@ -524,15 +292,18 @@
               </div>
             </div>
           </div>
-
           <div class="form-section">
             <label class="label"
               >Network <img src="icons/info-circle-svgrepo-com.png" alt="info"
             /></label>
-            <div class="input-container">
+            <!-- MODIFIED: Network input is now a clickable div -->
+            <div class="input-container" id="network-selector">
               <div class="input-row">
-                <div class="select-imitation">
-                  <span class="auto">Automatically match the network</span>
+                <div
+                  id="network-name-display"
+                  class="select-imitation placeholder"
+                >
+                  <span>Automatically match the network</span>
                   <img
                     src="icons/arrow-toggle-down-svgrepo-com.png"
                     alt="dropdown"
@@ -541,7 +312,6 @@
               </div>
             </div>
           </div>
-
           <div class="form-section">
             <label class="label"
               >Withdraw Amount
@@ -569,7 +339,6 @@
               </div>
             </div>
           </div>
-
           <p class="warning-text">
             * Do not withdraw directly to a crowdfund or ICO. We will not credit
             your account with tokens from that sale.
@@ -579,26 +348,20 @@
             <a href="#" class="link">Learn more</a>
           </p>
         </main>
-
-        <!-- ==================================================== -->
-        <!-- === PIXEL-PERFECT FOOTER HTML FROM YOUR SNIPPET START === -->
-        <!-- ==================================================== -->
         <footer class="page-footer">
           <div class="footer-content">
             <div class="summary-details">
               <div class="receive-amount-group">
-                <!-- This is the "Receive amount" you wanted moved up -->
                 <p class="label">Receive amount</p>
                 <p id="receive-amount" class="value">0.00 USDT</p>
               </div>
-              <p class="network-fee-label">Network fee 0.00 USDT</p>
+              <p id="network-fee-label" class="network-fee-label">
+                Network fee 0.00 USDT
+              </p>
             </div>
             <button id="send-btn" class="send-btn">Withdraw</button>
           </div>
         </footer>
-        <!-- ================================================== -->
-        <!-- === PIXEL-PERFECT FOOTER HTML FROM YOUR SNIPPET END === -->
-        <!-- ================================================== -->
       </div>
 
       <!-- VIEW 3: RECEIPT PAGE (UNCHANGED) -->
@@ -651,6 +414,24 @@
         </footer>
       </div>
 
+      <!-- ============================================= -->
+      <!-- === NEW: NETWORK SELECTION OVERLAY HTML === -->
+      <!-- ============================================= -->
+      <div id="network-overlay-container">
+        <div class="network-modal">
+          <header class="network-modal-header">
+            <div class="grabber"></div>
+            <h3 class="title">Choose Network</h3>
+          </header>
+          <main class="network-modal-content">
+            <ul id="network-list" class="network-list">
+              <!-- Network items will be dynamically injected here by JS -->
+            </ul>
+          </main>
+          <footer class="network-modal-footer"></footer>
+        </div>
+      </div>
+
       <div id="loading-overlay" class="overlay">
         <div class="loading-spinner"></div>
       </div>
@@ -662,13 +443,75 @@
     </div>
 
     <script>
-      // JAVASCRIPT IS 100% UNCHANGED
       document.addEventListener("DOMContentLoaded", () => {
+        // --- 1. STATE & APP SETUP ---
         const APP_STORAGE_KEY = "binanceCloneData_v1";
         let appState = {},
           ownedAssets = [],
           allFetchedAssets = [],
           selectedAsset = {};
+
+        // --- NEW: NETWORK DATA & STATE ---
+        const networkData = [
+          {
+            id: "bep20",
+            name: "BNB Smart Chain (BEP20)",
+            fee: 0,
+            minWithdrawal: 10,
+            arrivalTime: "≈ 1 mins",
+          },
+          {
+            id: "opbnb",
+            name: "opBNB",
+            fee: 0,
+            minWithdrawal: 20,
+            arrivalTime: "≈ 3 mins",
+          },
+          {
+            id: "tron",
+            name: "Tron (TRC20)",
+            fee: 1,
+            minWithdrawal: 1,
+            arrivalTime: "≈ 1 mins",
+          },
+          {
+            id: "aptos",
+            name: "Aptos",
+            fee: 0.04,
+            minWithdrawal: 10,
+            arrivalTime: "≈ 1 mins",
+          },
+          {
+            id: "erc20",
+            name: "Ethereum (ERC20)",
+            fee: 1.2,
+            minWithdrawal: 15,
+            arrivalTime: "≈ 2 mins",
+          },
+          {
+            id: "polygon",
+            name: "Polygon POS",
+            fee: 0.0064,
+            minWithdrawal: 0.013,
+            arrivalTime: "≈ 2 mins",
+          },
+          {
+            id: "arbitrum",
+            name: "Arbitrum One",
+            fee: 0.073,
+            minWithdrawal: 0.15,
+            arrivalTime: "≈ 1 mins",
+          },
+          {
+            id: "solana",
+            name: "Solana",
+            fee: 0.5,
+            minWithdrawal: 10,
+            arrivalTime: "≈ 1 mins",
+          },
+        ];
+        let selectedNetwork = null;
+
         const loadState = () => {
           try {
             const savedState = localStorage.getItem(APP_STORAGE_KEY);
@@ -686,6 +529,7 @@
         const saveState = () =>
           localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(appState));
 
+        // --- 2. CORE LOGIC ---
         const handleSend = () => {
           showOverlay("loading-overlay");
           const amount = parseFloat(
@@ -693,34 +537,46 @@
           );
           const recipientId =
             document.getElementById("recipient-id-input").value;
+
+          // MODIFIED: Added check for selectedNetwork and fee
+          const fee = selectedNetwork.fee;
           if (
             !recipientId ||
+            !selectedNetwork ||
             isNaN(amount) ||
             amount <= 0 ||
-            amount > selectedAsset.balance
+            amount > selectedAsset.balance ||
+            amount < selectedNetwork.minWithdrawal
           ) {
-            alert("Invalid details or insufficient balance.");
+            alert(
+              "Please check your details. Ensure amount is sufficient for withdrawal and covers network fees."
+            );
             hideOverlay("loading-overlay");
             return;
           }
+
           setTimeout(() => {
             loadState();
             const orderId = `${Date.now()}${Math.random()
               .toString()
               .slice(2, 10)}`;
             const assetSymbolLower = selectedAsset.symbol.toLowerCase();
-            const usdValueDeducted = amount * selectedAsset.price;
-            appState.wallet[assetSymbolLower] -= amount;
+            const usdValueDeducted = amount * selectedAsset.price; // The total value deducted from user's net worth
+
+            appState.wallet[assetSymbolLower] -= amount; // Deduct the full amount entered
             appState.wallet.est_total_value -= usdValueDeducted;
+
             const transaction = {
               id: orderId,
               type: "Send",
               date: new Date().toISOString(),
-              amount: amount,
+              amount: amount, // The amount user typed
+              fee: fee, // The network fee
+              receiveAmount: amount - fee, // What the recipient gets
               currencySymbol: selectedAsset.symbol,
               usdValue: usdValueDeducted,
               recipientId: recipientId,
-              paymentMethod: "Spot Account",
+              network: selectedNetwork.name,
             };
             appState.transactions.unshift(transaction);
             saveState();
@@ -734,6 +590,7 @@
           }, 4000);
         };
 
+        // --- 3. UI RENDERING & MANAGEMENT ---
         const showView = (viewId) => {
           document
             .querySelectorAll(".view")
@@ -741,13 +598,16 @@
           document.getElementById(viewId)?.classList.add("active");
         };
         const renderReceipt = (tx) => {
-          const amountString = `${tx.amount.toFixed(2)} ${tx.currencySymbol}`;
+          const amountString = `${(tx.amount - tx.fee).toFixed(2)} ${
+            tx.currencySymbol
+          }`;
           document.getElementById("receipt-amount").textContent = amountString;
           document.getElementById("receipt-recipient-id").textContent =
             tx.recipientId;
           document.getElementById("receipt-order-id").textContent = tx.id;
-          document.getElementById("receipt-paid-with").textContent =
-            amountString;
+          document.getElementById(
+            "receipt-paid-with"
+          ).textContent = `${tx.amount.toFixed(2)} ${tx.currencySymbol}`;
         };
         const renderAssetList = (assetsToRender) => {
           const listEl = document.getElementById("asset-list");
@@ -815,6 +675,62 @@
             listEl.innerHTML = `<li style="text-align:center; padding: 40px; color: var(--binance-gray);">Error loading assets.</li>`;
           }
         };
+
+        // --- NEW: NETWORK MODAL FUNCTIONS ---
+        const showNetworkOverlay = () => {
+          document
+            .getElementById("network-overlay-container")
+            .classList.add("active");
+        };
+        const hideNetworkOverlay = () => {
+          document
+            .getElementById("network-overlay-container")
+            .classList.remove("active");
+        };
+        const renderNetworkList = () => {
+          const listEl = document.getElementById("network-list");
+          listEl.innerHTML = networkData
+            .map(
+              (network) => `
+                <li class="network-item ${
+                  selectedNetwork?.id === network.id ? "selected" : ""
+                }" data-network-id="${network.id}">
+                    <div class="network-details">
+                        <p class="name">${network.name}</p>
+                        <p class="info">
+                            Fee ${network.fee} ${selectedAsset.symbol} <br>
+                            Minimum withdrawal ${network.minWithdrawal} ${
+                selectedAsset.symbol
+              } <br>
+                            Arrival time ${network.arrivalTime}
+                        </p>
+                    </div>
+                    <div class="network-radio"></div>
+                </li>
+            `
+            )
+            .join("");
+          listEl
+            .querySelectorAll(".network-item")
+            .forEach((item) =>
+              item.addEventListener("click", handleNetworkSelection)
+            );
+        };
+        const handleNetworkSelection = (event) => {
+          const networkId = event.currentTarget.dataset.networkId;
+          selectedNetwork = networkData.find((n) => n.id === networkId);
+          const networkNameEl = document.querySelector(
+            "#network-name-display span"
+          );
+          networkNameEl.textContent = selectedNetwork.name;
+          document
+            .getElementById("network-name-display")
+            .classList.remove("placeholder");
+          updateFooterSummary();
+          validateAllInputs();
+          hideNetworkOverlay();
+        };
+
         const updateUIForSelectedAsset = () => {
           if (!selectedAsset) return;
           document.getElementById(
@@ -840,18 +756,27 @@
         const resetSendInputs = () => {
           document.getElementById("amount-input").value = "";
           document.getElementById("recipient-id-input").value = "";
+          selectedNetwork = null; // Reset network on asset change
+          document.querySelector("#network-name-display span").textContent =
+            "Automatically match the network";
+          document
+            .getElementById("network-name-display")
+            .classList.add("placeholder");
           updateFooterSummary();
           validateAllInputs();
         };
         const updateFooterSummary = () => {
           const amount =
             parseFloat(document.getElementById("amount-input").value) || 0;
+          const fee = selectedNetwork?.fee || 0;
+          const receiveAmount = amount > 0 ? amount - fee : 0;
           const symbol = selectedAsset.symbol || "";
-          const receiveAmountEl = document.querySelector(
+          document.querySelector(
             ".receive-amount-group .value"
-          );
-          if (receiveAmountEl)
-            receiveAmountEl.textContent = `${amount.toFixed(2)} ${symbol}`;
+          ).textContent = `${receiveAmount.toFixed(2)} ${symbol}`;
+          document.getElementById(
+            "network-fee-label"
+          ).textContent = `Network fee ${fee.toFixed(2)} ${symbol}`;
         };
         const validateAllInputs = () => {
           const amount = parseFloat(
@@ -864,10 +789,17 @@
             !isNaN(amount) &&
             amount > 0 &&
             selectedAsset &&
-            amount <= selectedAsset.balance;
+            amount <= selectedAsset.balance &&
+            (!selectedNetwork || amount >= selectedNetwork.minWithdrawal);
           const isRecipientValid = recipientId.trim() !== "";
-          sendBtn.classList.toggle("active", isAmountValid && isRecipientValid);
+          const isNetworkValid = selectedNetwork !== null;
+          sendBtn.classList.toggle(
+            "active",
+            isAmountValid && isRecipientValid && isNetworkValid
+          );
         };
+
+        // --- 5. EVENT LISTENERS ---
         const setupEventListeners = () => {
           document.querySelectorAll(".back-arrow").forEach((arrow) => {
             arrow.addEventListener("click", () => {
@@ -934,7 +866,23 @@
                 alert("Clipboard API not available.");
               }
             });
+
+          // --- NEW: NETWORK OVERLAY LISTENERS ---
+          document
+            .getElementById("network-selector")
+            .addEventListener("click", () => {
+              renderNetworkList();
+              showNetworkOverlay();
+            });
+          document
+            .getElementById("network-overlay-container")
+            .addEventListener("click", (e) => {
+              if (e.target.id === "network-overlay-container") {
+                hideNetworkOverlay();
+              }
+            });
         };
+
         const showOverlay = (id) =>
           document.getElementById(id)?.classList.add("active");
         const hideOverlay = (id) =>
